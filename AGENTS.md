@@ -142,7 +142,6 @@ When builder receives a coding or engineering task, delegate to the appropriate 
 1. **Always**: Read L0 (identity block of `memory/core.md`) + L1 (`memory/L1-critical-facts.md`)
 2. **Check** `logs/precompact-flag.md` — if a recent entry exists, this is a recovery session: load L2+L3 and prioritize writing any unsaved decisions/learnings before proceeding
 3. **On demand**: Load L2 files when the session topic warrants it
-4. **Semantic recall**: Before loading L2/L3 files by guess, run `python3 memory/memory_search.py "[session topic]" --top 5` to surface the most relevant chunks. The output tells you exactly which files to load.
 
 ### On Session End
 1. Evaluate: "Have recent exchanges revealed preferences, status changes, or patterns worth persisting?"
@@ -216,7 +215,6 @@ When a repeatable pattern emerges (3+ times):
 | seo-content-engine | "SEO content", "blog", "content calendar", "keyword gaps for [site]" | Competitor gap analysis → keyword targeting → article generation → publish |
 | voice-agent-builder | "build a voice agent", "set up a voice bot", "configure voice" | Voice persona + script + integration + test protocol |
 | metaclaw-learning | after errors, "extract learnings", on 3rd pattern repeat, task post-mortems | Extract lessons from failures/successes → inject into future agent runs |
-| grade | "/grade", "grade this", "grade the work", independent review | Fresh-session CTO grader — spawns Opus subagent with only the diff + original ask, no memory/chat context. Independent A-F grade + SHIP/FIX-FIRST/KILL verdict. |
 
 ### ECC Technical Skills (181 skills in `skills/ecc/` — auto-used by builder sub-agents)
 
@@ -285,9 +283,10 @@ Key skills available to the builder team:
 
 ```
 ~/jarvis/
-├── CLAUDE.md              ← YOU ARE HERE
+├── AGENTS.md              ← this file (Codex runtime)
+├── CLAUDE.md              ← Claude Code / Cowork runtime (canonical)
 ├── setup/                 ← First-run wizard and archetype definitions
-├── .claude/agents/        ← Agent definition files
+├── .claude/agents/        ← Agent definition files (65 agents: 18 JARVIS + 47 ECC)
 ├── memory/                ← Persistent memory (capped .md files)
 ├── owners-inbox/          ← Outputs for operator to review
 ├── team-inbox/            ← Files operator drops for processing
@@ -326,8 +325,8 @@ Key skills available to the builder team:
 3. Check owners-inbox for pending reviews
 4. Check team-inbox for new files
 5. Pull any active project/goal status
-6. Summarize: meetings, priorities, blockers, progress
-7. Ask: "What's the focus today?"
+7. Summarize: meetings, priorities, blockers, progress
+8. Ask: "What's the focus today?"
 
 ---
 
