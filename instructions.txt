@@ -1,0 +1,231 @@
+========================================================
+  JARVIS UNIVERSAL — SETUP & USAGE GUIDE
+  Your Personal Agentic Operating System
+========================================================
+
+WHAT IS THIS?
+-------------
+JARVIS is a Claude Code project that turns Claude into your
+personal AI chief of staff. It self-configures for who you
+are, learns your context over time, and delegates to a team
+of AI specialists — so you never have to repeat yourself.
+
+This is NOT just a prompt file. It's a full operating system:
+  - 65 agents (18 JARVIS specialists + 47 ECC builder sub-team)
+  - ~55 top-level skill playbooks + 181 ECC technical skills
+  - Persistent memory that grows with every session
+  - Self-healing automation builder
+  - MetaClaw immune system that learns from failures
+  - Morning briefings, weekly reviews, proactive alerts
+
+Works for: business owners, creators, developers, researchers,
+students, executives, or anyone with ambitious goals.
+
+
+REQUIREMENTS
+------------
+  1. Claude Code CLI — https://claude.ai/code
+  2. An Anthropic API key
+  3. That's it. MCPs are optional but unlock more power.
+
+
+QUICK SETUP (5 minutes)
+-----------------------
+
+Step 1: Clone or copy this folder to your machine
+
+  If you have git:
+    git clone https://github.com/ChrisJDiMarco/jarvis-universal.git ~/jarvis
+
+  If you downloaded the zip:
+    Unzip to: ~/jarvis
+    (The folder should be named "jarvis" in your home directory)
+
+Step 2: Open Claude Code in the jarvis folder
+
+    cd ~/jarvis
+    claude
+
+Step 3: JARVIS will detect it's a first run
+
+  It asks 3 questions to configure itself for you:
+    1. What's your name and what do you do?
+    2. What's your main goal right now?
+    3. What tools do you use? (Notion, Slack, Gmail, etc.)
+
+  Then it configures memory, activates the right agents,
+  and you're ready to work.
+
+
+OPTIONAL: CONNECT MCP SERVERS
+------------------------------
+MCPs give JARVIS direct access to your tools without
+needing browser automation. The more you connect, the
+more JARVIS can do without leaving the terminal.
+
+High-value MCPs to add:
+  - Gmail MCP → read/draft emails
+  - Google Calendar MCP → calendar queries + meeting prep
+  - Notion MCP → search/write your workspace
+  - Slack MCP → send messages, read channels
+  - Firecrawl MCP → web research (HIGHLY recommended)
+  - n8n MCP → trigger/manage workflows
+  - iMessage MCP → proactive alerts to your phone
+
+To install MCPs, run:
+    claude mcp add [mcp-name]
+
+Or see: https://docs.claude.ai/code/mcp
+
+
+WHAT YOU CAN ASK
+----------------
+Just talk to it naturally. JARVIS routes to the right specialist.
+
+  Research:
+    "Research the best CRM for a 5-person sales team"
+    "Deep dive on [topic] — I want academic-level analysis"
+    "Competitive brief on [company]"
+
+  Content:
+    "Write a LinkedIn post about [topic] in my voice"
+    "Draft a newsletter on [theme]"
+    "Write a Reddit post for r/[subreddit] about [thing]"
+
+  Building:
+    "Build an app that [does X] — full stack"
+    "Automate [process] in n8n"
+    "Build a landing page for [thing]"
+    "Set up a voice agent for [use case]"
+
+  Daily Operations:
+    "Morning briefing"
+    "Weekly review"
+    "What's on my calendar this week?"
+    "Prep me for my meeting with [person]"
+    "Monitor [condition] and alert me when [trigger]"
+
+  Finance:
+    "Log [$amount] revenue from [client]"
+    "What's my burn rate this month?"
+    "Generate an invoice for [client]"
+
+  Intelligence:
+    "Analyze my top competitors"
+    "Fact-check this article"
+    "What are the keyword gaps for [my-site.com]?"
+
+  System:
+    "Hire a new agent that handles [X]"
+    "What did we learn from this session?"
+    "Update my profile — my context has changed"
+
+
+HOW JARVIS GETS SMARTER
+------------------------
+After each session, JARVIS:
+  1. Evaluates what it learned and updates memory files
+  2. Extracts lessons from any failures (MetaClaw system)
+  3. When a pattern repeats 3+ times, creates a new skill
+
+You never have to explain your context twice. Preferences,
+decisions, and lessons persist across every session.
+
+
+FILE STRUCTURE
+--------------
+  CLAUDE.md          → System brain (don't delete this)
+  setup/             → First-run wizard + archetype definitions
+  memory/            → What JARVIS knows about you
+  .claude/agents/    → Your team of specialists
+  team/roster.md     → Agent registry (add/remove agents here)
+  skills/            → Skill playbooks (20+ built-in)
+  skills/learned/    → Auto-generated lessons from experience
+  owners-inbox/      → Everything JARVIS produces for you to review
+  team-inbox/        → Drop files here for JARVIS to process
+  projects/          → Per-project files
+  n8n-configs/       → Automation workflow templates
+  logs/              → Activity log + memory update log
+  docs/              → System documentation
+
+
+HIRING NEW AGENTS
+-----------------
+JARVIS comes with 65 agents (18 JARVIS + 47 ECC). Add more any time:
+
+  "I need an agent that handles [X].
+   They should [Y] and use [Z] tools."
+
+JARVIS writes the agent file and updates the roster.
+
+Popular agents people add:
+  - CRM manager (for specific CRM platforms)
+  - Social media manager (platform-specific strategy)
+  - Project manager (Agile, Jira, Linear)
+  - Data analyst (SQL, Python, visualization)
+  - Email marketer (campaigns, segmentation)
+
+
+TROUBLESHOOTING
+---------------
+Q: JARVIS seems to have forgotten my context
+A: Check memory/core.md — if it's empty, re-run first setup.
+   Say "update my profile" to re-configure.
+
+Q: An agent keeps failing
+A: Say "JARVIS extract learnings from this failure"
+   The MetaClaw system will log the issue and prevent recurrence.
+
+Q: I want to reset everything
+A: Delete memory/core.md and memory/context.md contents,
+   replace with the template text in those files.
+
+Q: How do I add a new skill?
+A: Say "Create a skill for [task type]" — JARVIS will
+   write the skill file and add it to the index.
+
+Q: Scheduled monitoring isn't firing
+A: Run "list_scheduled_tasks" in JARVIS to verify.
+   Silent failure is common — always check before assuming.
+
+
+ADVANCED: AGENT TEAMS
+---------------------
+For complex work requiring specialists to collaborate:
+
+  "Build me a team of 3 agents to [complex task]"
+
+This spins up coordinated agents with peer-to-peer messaging
+and QA loops. Enable in .claude/settings.local.json:
+  { "claude_code_agent_teams": true }
+
+See skills/agent-teams.md for full documentation.
+
+
+PHILOSOPHY
+----------
+JARVIS is built on 5 ideas:
+
+1. Route, don't execute — The orchestrator delegates.
+   Specialists focus. Quality stays high.
+
+2. Memory is sacred — JARVIS should never need to ask
+   the same question twice.
+
+3. Self-improve or stagnate — Every failure becomes a rule.
+   Every pattern becomes a skill.
+
+4. Plan before acting — For big tasks, propose first.
+   Wasted execution is worse than wasted planning.
+
+5. The most direct tool wins — Never use Chrome when
+   an MCP exists. Never use automation when a direct
+   API call will do.
+
+
+SOURCE
+------
+GitHub: https://github.com/ChrisJDiMarco/jarvis-universal
+License: MIT — fork it, build on it, make it yours.
+
+========================================================
