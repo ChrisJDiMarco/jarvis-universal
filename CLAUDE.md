@@ -215,7 +215,7 @@ When a repeatable pattern emerges (3+ times):
 | elite-web-ui | "landing page", "make it animated", "premium UI", "website", any visual web artifact | 2026 design system: animations, 3D, depth, motion — see `skills/elite-web-ui/SKILL.md` |
 | seo-content-engine | "SEO content", "blog", "content calendar", "keyword gaps for [site]" | Competitor gap analysis → keyword targeting → article generation → publish |
 | voice-agent-builder | "build a voice agent", "set up a voice bot", "configure voice" | Voice persona + script + integration + test protocol |
-| metaclaw-learning | after errors, "extract learnings", on 3rd pattern repeat, task post-mortems | Extract lessons from failures/successes → inject into future agent runs |
+| metaclaw-learning | **autonomous** — Stop hook on any errored session + orchestrator injects before routing; manual triggers still work | Extract lessons from failures/successes → BM25-indexed → injected into future agent runs |
 | grade | "/grade", "grade this", "grade the work", independent review | Fresh-session CTO grader — spawns Opus subagent with only the diff + original ask, no memory/chat context. Independent A-F grade + SHIP/FIX-FIRST/KILL verdict. |
 
 ### ECC Technical Skills (181 skills in `skills/ecc/` — auto-used by builder sub-agents)

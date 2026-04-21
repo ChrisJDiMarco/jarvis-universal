@@ -1,15 +1,21 @@
 #!/usr/bin/env python3
 """
 JARVIS Memory Indexer
-Chunks all memory/*.md files by section heading and stores them in a JSON
-index so memory_search.py can do fast BM25 recall across all memory files
-without loading every file into context.
+Chunks markdown files by section heading and stores them in a JSON index so
+memory_search.py can do fast BM25 recall without loading every file into
+context.
+
+Default usage indexes memory/*.md. Pass --source-dir / --index-path to reuse
+the same indexer for other corpora (e.g. skills/learned/).
 
 Usage:
-    python3 memory/memory_indexer.py              # full reindex
-    python3 memory/memory_indexer.py file1.md     # incremental (named files only)
+    python3 memory/memory_indexer.py                    # full reindex of memory/
+    python3 memory/memory_indexer.py file1.md           # incremental (named files only)
+    python3 memory/memory_indexer.py --source-dir DIR --index-path IDX.json
+    python3 memory/memory_indexer.py --source-dir DIR --index-path IDX.json file1.md
 """
 
+import argparse
 import re
 import sys
 import json
@@ -20,7 +26,7 @@ MEMORY_DIR = Path(__file__).parent
 INDEX_PATH = MEMORY_DIR / "memory_index.json"
 
 SKIP_FILES = {"memory_indexer.py", "memory_search.py", "memory_index.json",
-              "memory_index_stats.json"}
+              "memory_index_stats.json", "learned_index.json"}
 
 
 def parse_sections(text: str) -> list[dict]:
@@ -59,17 +65,18 @@ def parse_sections(text: str) -> list[dict]:
     return chunks
 
 
-def load_index() -> dict:
-    if INDEX_PATH.exists():
+def load_index(index_path: Path) -> dict:
+    if index_path.exists():
         try:
-            return json.loads(INDEX_PATH.read_text(encoding="utf-8"))
+            return json.loads(index_path.read_text(encoding="utf-8"))
         except json.JSONDecodeError:
             pass
     return {"chunks": [], "stats": {}}
 
 
-def save_index(index: dict) -> None:
-    INDEX_PATH.write_text(json.dumps(index, indent=2, ensure_ascii=False), encoding="utf-8")
+def save_index(index: dict, index_path: Path) -> None:
+    index_path.parent.mkdir(parents=True, exist_ok=True)
+    index_path.write_text(json.dumps(index, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
 def index_file(index: dict, md_path: Path) -> int:
@@ -95,14 +102,18 @@ def index_file(index: dict, md_path: Path) -> int:
     return len(sections)
 
 
-def main(target_files: list[str] | None = None) -> None:
-    index = load_index()
+def main(
+    target_files: list[str] | None = None,
+    source_dir: Path = MEMORY_DIR,
+    index_path: Path = INDEX_PATH,
+) -> None:
+    index = load_index(index_path)
 
     if target_files:
-        paths = [MEMORY_DIR / f for f in target_files if (MEMORY_DIR / f).exists()]
+        paths = [source_dir / f for f in target_files if (source_dir / f).exists()]
     else:
         paths = sorted(
-            p for p in MEMORY_DIR.glob("*.md")
+            p for p in source_dir.glob("*.md")
             if p.name not in SKIP_FILES
         )
 
@@ -116,12 +127,22 @@ def main(target_files: list[str] | None = None) -> None:
         "last_indexed": datetime.now(timezone.utc).isoformat(),
         "files_indexed": len(index["chunks"]) and len({c["file"] for c in index["chunks"]}),
         "total_chunks": len(index["chunks"]),
+        "source_dir": str(source_dir),
     }
 
-    save_index(index)
-    print(f"\n✓ Index updated: {len(paths)} files, {total_chunks} chunks → {INDEX_PATH.name}")
+    save_index(index, index_path)
+    print(f"\n✓ Index updated: {len(paths)} files, {total_chunks} chunks → {index_path.name}")
+
+
+def _parse_args() -> tuple[list[str] | None, Path, Path]:
+    parser = argparse.ArgumentParser(description="BM25 indexer for markdown corpora")
+    parser.add_argument("files", nargs="*", help="Specific files to reindex (incremental)")
+    parser.add_argument("--source-dir", type=Path, default=MEMORY_DIR)
+    parser.add_argument("--index-path", type=Path, default=INDEX_PATH)
+    args = parser.parse_args()
+    return (args.files or None), args.source_dir, args.index_path
 
 
 if __name__ == "__main__":
-    target = sys.argv[1:] if len(sys.argv) > 1 else None
-    main(target)
+    target, source, idx = _parse_args()
+    main(target, source_dir=source, index_path=idx)

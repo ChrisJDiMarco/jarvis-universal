@@ -3,12 +3,25 @@
 ## Trigger
 "extract learnings", "what did we learn", after confirmed agent error + recovery, on 3rd pattern repeat, task post-mortems
 
+## Autonomous Mode (active)
+As of 2026-04-21, MetaClaw runs autonomously through three scripts:
+
+| Script | When it runs | What it does |
+|--------|--------------|--------------|
+| `hooks/metaclaw_extract.py` | Stop hook, every session that had an errored tool call | Cheap bash pre-filter counts `is_error:true` results; if any found, spawns this script in background. Haiku reads the transcript, extracts a structured lesson per category, appends to `skills/learned/{category}.md`. |
+| `hooks/metaclaw_inject.py` | Orchestrator routing (before delegating) | BM25 search over `skills/learned/learned_index.json` for task-relevant lessons. Prints a ready-to-inject Markdown block. Silent if no matches clear the min-score floor. |
+| `hooks/metaclaw_consolidate.py` | Weekly scheduled task | Haiku passes over any learned file over soft cap (6k chars) or with duplicate slugs. Merges, prunes LOW-confidence >21 days, keeps backups as `.md.bak`. |
+
+The learned corpus is indexed by the same pipeline as `memory/` — `memory_indexer.py` with `--source-dir` and `--index-path` flags.
+
 ## Invocation
-**Manual or post-error only — do not auto-invoke on casual keyword hits.**
-MetaClaw writes to shared learning files. Firing mid-task on the wrong signal corrupts the learning corpus with partial or context-free entries. Only run after a genuine error/recovery cycle, after an explicit the operator request, or at session/task end.
+Auto-invoked by hooks. Manual invocation still works:
+- `python3 hooks/metaclaw_extract.py <transcript_path>` — force extract from a specific session
+- `python3 hooks/metaclaw_inject.py "<query>" --top 5` — preview what would be injected for a task
+- `python3 hooks/metaclaw_consolidate.py --dry-run` — report which files need hygiene
 
 ## Goal
-Automatically extract reusable lessons from failures, recoveries, and validated successes — then inject them into future agent runs so JARVIS never makes the same mistake twice. Inspired by AutoResearchClaw's MetaClaw cross-run learning system.
+Extract reusable lessons from failures, recoveries, and validated successes — then inject them into future agent runs so JARVIS doesn't repeat past mistakes. Inspired by AutoResearchClaw's MetaClaw cross-run learning system.
 
 ---
 

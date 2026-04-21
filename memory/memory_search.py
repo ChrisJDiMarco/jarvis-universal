@@ -24,7 +24,7 @@ except ImportError:
     sys.exit(1)
 
 MEMORY_DIR = Path(__file__).parent
-INDEX_PATH = MEMORY_DIR / "memory_index.json"
+DEFAULT_INDEX_PATH = MEMORY_DIR / "memory_index.json"
 
 STOP_WORDS = {
     "a", "an", "the", "and", "or", "but", "in", "on", "at", "to", "for",
@@ -41,18 +41,18 @@ def tokenize(text: str) -> list[str]:
     return [t for t in tokens if t not in STOP_WORDS and len(t) > 1]
 
 
-def load_chunks() -> list[dict]:
-    if not INDEX_PATH.exists():
+def load_chunks(index_path: Path = DEFAULT_INDEX_PATH) -> list[dict]:
+    if not index_path.exists():
         return []
     try:
-        data = json.loads(INDEX_PATH.read_text(encoding="utf-8"))
+        data = json.loads(index_path.read_text(encoding="utf-8"))
         return data.get("chunks", [])
     except (json.JSONDecodeError, KeyError):
         return []
 
 
-def search(query: str, top_k: int = 5) -> list[dict]:
-    chunks = load_chunks()
+def search(query: str, top_k: int = 5, index_path: Path = DEFAULT_INDEX_PATH) -> list[dict]:
+    chunks = load_chunks(index_path)
     if not chunks:
         return []
 
@@ -103,17 +103,23 @@ def format_results(results: list[dict], query: str) -> str:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Search JARVIS memory index")
+    parser = argparse.ArgumentParser(description="Search a BM25-indexed markdown corpus")
     parser.add_argument("query", help="Search query")
     parser.add_argument("--top", type=int, default=5, help="Number of results (default 5)")
     parser.add_argument("--json", action="store_true", dest="as_json", help="Output raw JSON")
+    parser.add_argument(
+        "--index-path",
+        type=Path,
+        default=DEFAULT_INDEX_PATH,
+        help="Path to index JSON (default: memory/memory_index.json)",
+    )
     args = parser.parse_args()
 
-    if not INDEX_PATH.exists():
-        print("Index not found. Run: python3 memory/memory_indexer.py")
+    if not args.index_path.exists():
+        print(f"Index not found at {args.index_path}. Run memory_indexer.py first.")
         sys.exit(1)
 
-    results = search(args.query, top_k=args.top)
+    results = search(args.query, top_k=args.top, index_path=args.index_path)
 
     if args.as_json:
         print(json.dumps(results, indent=2))
