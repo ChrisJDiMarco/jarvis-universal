@@ -214,6 +214,12 @@ JARVIS: What tools do you use day-to-day?
 
 After about two minutes, JARVIS has populated memory, activated the right agents, and is ready to work.
 
+### Optional Power-Up: Semantic Code Search
+
+Add a fully local vector index over your entire JARVIS corpus — code, memory, skills, agents, docs. JARVIS can then find things by meaning, not exact keywords. Great for queries like `"find where we handle [concept]"` or `"anything about [topic]?"` across every project.
+
+Fully offline: Ollama embeddings + local Milvus container. Zero API cost, data stays on your machine. ~10 min to set up. See [`docs/semantic-code-search-setup.md`](docs/semantic-code-search-setup.md).
+
 ---
 
 ## 🔌 MCP Integrations (Optional — Unlocks Full Power)

@@ -217,6 +217,7 @@ When a repeatable pattern emerges (3+ times):
 | voice-agent-builder | "build a voice agent", "set up a voice bot", "configure voice" | Voice persona + script + integration + test protocol |
 | metaclaw-learning | **autonomous** — Stop hook on any errored session + orchestrator injects before routing; manual triggers still work | Extract lessons from failures/successes → BM25-indexed → injected into future agent runs |
 | grade | "/grade", "grade this", "grade the work", independent review | Fresh-session CTO grader — spawns Opus subagent with only the diff + original ask, no memory/chat context. Independent A-F grade + SHIP/FIX-FIRST/KILL verdict. |
+| semantic-code-search | "find where X is implemented", "who references Y", "where do we handle", paraphrased code/concept lookup across projects | Semantic retrieval over the whole JARVIS corpus (code + markdown) via local Ollama embeddings + Milvus. Optional — see `docs/semantic-code-search-setup.md`. |
 
 ### ECC Technical Skills (181 skills in `skills/ecc/` — auto-used by builder sub-agents)
 
@@ -267,6 +268,7 @@ Key skills available to the builder team:
 | Mac GUI / AppleScript | `mcp__Control_your_Mac__osascript` | Native app control |
 | iMessages | `mcp__Read_and_Send_iMessages__*` | Default alert channel for proactive notifications |
 | Apple Notes | `mcp__Read_and_Write_Apple_Notes__*` | Quick local capture |
+| Semantic code/doc search | `mcp__claude-context__search_code` | Natural-language search over the whole JARVIS corpus. Local Milvus + Ollama. Optional — see `skills/semantic-code-search.md` and `docs/semantic-code-search-setup.md`. |
 
 ### Routing Cheat Sheet
 | Task | Right tool | Wrong tool |
@@ -278,6 +280,7 @@ Key skills available to the builder team:
 | Read an email | `gmail_read_message` | Chrome → Gmail |
 | Look up a doc | `notion-search` | Chrome → Notion |
 | Alert operator urgently | `send_imessage` | Any other channel |
+| Semantic "find where X is implemented" | `mcp__claude-context__search_code` | Grep (when query is a concept not a string) |
 
 ---
 

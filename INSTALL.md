@@ -80,7 +80,41 @@ Ask JARVIS: `"set up a morning briefing every weekday at 8am"` — it handles th
 
 ---
 
-## 6. Verify It's Working
+## 6. Optional: Semantic Code Search (Local Vector Index)
+
+Add semantic search across your entire JARVIS corpus — code, memory, skills, agents, docs — so JARVIS can find things by meaning instead of exact keywords. Fully local (Ollama embeddings + local Milvus), zero ongoing cost.
+
+Unlocks queries like:
+- `"find where we handle scheduled-task failure recovery"`
+- `"anything I've written about pricing tiers?"`
+- `"what projects touch authentication?"`
+
+Setup is ~10 minutes (Ollama + Docker + one MCP registration + one first-index run). Full instructions in [`docs/semantic-code-search-setup.md`](docs/semantic-code-search-setup.md).
+
+TL;DR:
+```bash
+# 1. Install Ollama + pull embedding model
+brew install ollama && brew services start ollama     # macOS
+ollama pull nomic-embed-text
+
+# 2. Start local Milvus container
+mkdir -p ~/.milvus-standalone && cd ~/.milvus-standalone
+curl -sfL https://raw.githubusercontent.com/milvus-io/milvus/master/scripts/standalone_embed.sh -o standalone_embed.sh
+sed -i.bak 's/sudo docker/docker/g; s/sudo rm/rm/g' standalone_embed.sh
+bash standalone_embed.sh start
+
+# 3. Register MCP with Claude Code (one line — see setup doc for env)
+claude mcp add claude-context --scope user ... -- npx -y @zilliz/claude-context-mcp@latest
+
+# 4. First index (keeps MCP alive until done — don't use claude -p here)
+python3 ~/jarvis/scripts/claude_context_indexer.py
+```
+
+JARVIS will auto-route paraphrased "find / where / anything about" queries to this tool. See `skills/semantic-code-search.md` for the routing logic.
+
+---
+
+## 7. Verify It's Working
 
 Try these smoke tests in Claude Code:
 
@@ -95,7 +129,7 @@ Each one should route to a different specialist and produce a real output. Outpu
 
 ---
 
-## 7. Where Things Live
+## 8. Where Things Live
 
 | Path | Purpose |
 |------|---------|
@@ -112,7 +146,7 @@ Each one should route to a different specialist and produce a real output. Outpu
 
 ---
 
-## 8. Updating
+## 9. Updating
 
 ```bash
 cd ~/jarvis
@@ -123,7 +157,7 @@ Your `memory/` directory is gitignored by default, so updates won't touch your p
 
 ---
 
-## 9. Troubleshooting
+## 10. Troubleshooting
 
 **Claude Code starts but doesn't ask first-run questions.**
 `memory/core.md` has already been populated. Delete it and restart — or ask JARVIS to "re-run first-run setup".
@@ -139,7 +173,7 @@ The PreCompact hook at `hooks/precompact_hook.sh` saves state automatically. Sta
 
 ---
 
-## 10. Next Steps
+## 11. Next Steps
 
 - Read `CLAUDE.md` end-to-end — it is the system manual
 - Browse `skills/` for the full catalog of playbooks
