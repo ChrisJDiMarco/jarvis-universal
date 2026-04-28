@@ -58,6 +58,11 @@ After first run, the system is fully configured and self-sustaining.
 | Build (multi-platform) | build web + mobile, mobile app, iOS app, full-stack app, Appifex-style, app studio, multi-platform | app-studio agent |
 | Analysis | audit, analyze [thing], competitive, SEO, market, report on | analyst |
 | Design | landing page, web design, make it look, animated, premium UI, website | web-designer |
+| Design (hi-fi prototype) | hi-fi prototype, clickable demo, iOS/Android prototype, App mockup, interactive demo | web-designer → huashu-design skill |
+| Design (slide deck) | slide deck, keynote, presentation, PPT, PPTX, editable slides | web-designer → huashu-design skill |
+| Design (motion) | motion design, MP4 export, GIF export, 60fps animation, hero animation, promo video | web-designer → huashu-design skill |
+| Design (critique) | design critique, design review, 5-dimension review, expert critique, score this design | web-designer → huashu-design skill |
+| Design (direction) | design direction, design philosophy, recommend a style, pick a direction, design advisor | web-designer → huashu-design skill |
 | Monitoring | monitor, alert me when, watch for, keep an eye on | orchestrator → persistent-daemon skill |
 | Morning | morning briefing, come online, good morning, what's on today | orchestrator → morning-briefing skill |
 | Weekly | weekly review, end of week, how's the week | orchestrator → weekly-review skill |
@@ -88,7 +93,7 @@ Full registry in `team/roster.md`. Agents live in `.claude/agents/`.
 | builder | App & Automation Engineer | Sonnet/Opus | Apps, workflows, integrations, code |
 | app-studio | Multi-Platform App Builder | Sonnet/Opus | Web + mobile + backend from one prompt — Appifex-style pipeline |
 | analyst | Intelligence Analyst | Sonnet/Opus | Market analysis, SEO, competitive, data |
-| web-designer | Visual Web Designer | Sonnet/Opus | Landing pages, UI, animations, HTML artifacts |
+| web-designer | Visual Web Designer | Sonnet/Opus | Landing pages, UI, animations, HTML artifacts. Has two skills: `elite-web-ui` (landing pages, premium marketing UI) and `huashu-design` (hi-fi prototypes, slide decks, motion design, infographics, design critique — agency-tier pipeline). Pick by task type. |
 
 **Hiring new agents**: Tell JARVIS "I need an agent that handles [X]." JARVIS will write the `.md` file and update the roster.
 
@@ -213,6 +218,7 @@ When a repeatable pattern emerges (3+ times):
 | funded-company-analyzer | "find the play on [company]", "reverse engineer [company]", "replicate [company]", "find me a funded company to build" | Deconstruct funded AI company → data source + action layer → JARVIS build plan |
 | workflow-builder | "build a workflow", "automate [X]", "new workflow", "n8n workflow" | Design + deploy automation workflows using proven patterns |
 | elite-web-ui | "landing page", "make it animated", "premium UI", "website", any visual web artifact | 2026 design system: animations, 3D, depth, motion — see `skills/elite-web-ui/SKILL.md` |
+| huashu-design | "hi-fi prototype", "iOS prototype", "clickable demo", "slide deck", "keynote", "PPTX export", "design directions", "design critique", "5-dimension review", "motion design", "MP4 export", "infographic" | Agency-tier design pipeline: Core Asset Protocol (real brand assets, no hallucination) → Junior Designer workflow (assumptions + placeholders + iterate) → 5 schools × 20 philosophies advisor → HTML prototypes (iPhone/Android/macOS/browser frames, Playwright-tested) → editable PPTX (real text frames via html2pptx) → MP4/GIF motion (25fps base, 60fps interp, palette-optimized, 6 BGM tracks) → 5-dimension expert critique with radar chart. See `skills/huashu-design/SKILL.md`. **Personal-use license** — flag if commercial deliverable. |
 | seo-content-engine | "SEO content", "blog", "content calendar", "keyword gaps for [site]" | Competitor gap analysis → keyword targeting → article generation → publish |
 | voice-agent-builder | "build a voice agent", "set up a voice bot", "configure voice" | Voice persona + script + integration + test protocol |
 | metaclaw-learning | **autonomous** — Stop hook on any errored session + orchestrator injects before routing; manual triggers still work | Extract lessons from failures/successes → BM25-indexed → injected into future agent runs |
