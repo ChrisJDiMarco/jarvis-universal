@@ -1,6 +1,6 @@
 # L1 — Critical Facts (Always Loaded)
 
-> Target: ~300 tokens. Keep ruthlessly lean. L2/L3 load on demand.
+> Target: ~1,500 tokens (5,000 char cap). Calibrated for Opus 4.7. Keep lean but don't ruthlessly compress signal — the cap is a forcing function for dropping dead entries, not a context-window guard.
 >
 > This file is a template. Populated during first run with the 3–5 facts JARVIS needs in every session to stay grounded in who you are and what you're doing.
 

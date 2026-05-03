@@ -1,6 +1,6 @@
 # Learnings Memory
 
-> L2 — Self-improvement loop. Patterns, rules, and habits JARVIS has extracted from how you work. Cap: 6,000 chars.
+> L2 — Self-improvement loop. Patterns, rules, and habits JARVIS has extracted from how you work. Cap: 20,000 chars (recalibrated for Opus 4.7 — this is the highest-leverage memory file, give it room).
 >
 > Entries accumulate when a pattern repeats 3+ times, when a session ends with an unexpected result, or when you explicitly say "save this" after a correction or validated approach.
 

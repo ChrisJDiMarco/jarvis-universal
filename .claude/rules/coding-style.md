@@ -8,6 +8,10 @@ The #1 source of AI-caused damage is unsolicited changes. Before touching any fi
 - **Don't touch unrelated code.** If it works and wasn't mentioned, leave it alone.
 - **Ask before expanding scope.** If the task is ambiguous, stop and clarify — never fill gaps with creativity.
 - **Simplest solution wins.** Not the most elegant, not the most scalable — the smallest change that solves the problem.
+- **Match existing style, even if you'd do it differently.** If the file uses tabs, use tabs. If it uses single quotes, use single quotes. Stylistic consistency is more valuable than your taste.
+- **Mention unrelated dead code, don't delete it.** If you notice orphaned code while working, surface it as a separate observation. Removing it without being asked is a scope violation — let the operator decide.
+
+The test: every changed line should trace directly to the user's request.
 
 ## Immutability (CRITICAL)
 

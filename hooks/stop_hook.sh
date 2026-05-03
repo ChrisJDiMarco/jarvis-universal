@@ -4,7 +4,7 @@
 # Appends a breadcrumb to logs/session-log.jsonl every time.
 # If the session was substantive (>=3 tool calls OR any file writes),
 # also appends a structured entry to logs/daily-activity.md
-# so the activity log reflects real work without Chris having to do it manually.
+# so the activity log reflects real work without the operator having to do it manually.
 #
 # Zero-token: pure bash + jq, no Claude invocations.
 # Input: Claude Code passes a JSON object on stdin:
@@ -91,25 +91,33 @@ if [ -n "$FILES_TOUCHED" ] && echo "$FILES_TOUCHED" | grep -q "memory/"; then
     fi
 fi
 
-# ── MetaClaw: auto-extract lessons when the session had failure+recovery ─────
-# Cheap pre-filter in bash: count is_error:true tool_results in transcript.
-# If any found, spawn the Python extractor in the background so we don't block
-# the terminal waiting for Haiku. Silent on failure — logs to metaclaw.log.
-if [ -n "$TRANSCRIPT" ] && [ -f "$TRANSCRIPT" ] && command -v jq >/dev/null 2>&1; then
+# ── MetaClaw: auto-extract lessons from this session ────────────────────────
+# Two paths:
+#   - failure mode: any is_error:true tool_result → distill error+recovery lessons
+#   - success mode: substantive clean session (≥5 tool calls, 0 errors) → distill validated patterns
+# Both run in background so we don't block the terminal. Silent on failure — logs to metaclaw.log.
+if [ -n "$TRANSCRIPT" ] && [ -f "$TRANSCRIPT" ] && command -v jq >/dev/null 2>&1 && [ -f "$JARVIS_DIR/hooks/metaclaw_extract.py" ]; then
     ERROR_SIGNALS=$(jq -r 'select(.type=="user") | .message.content[]? | select(.type=="tool_result" and .is_error==true) | .tool_use_id' "$TRANSCRIPT" 2>/dev/null | wc -l | tr -d ' ')
-    if [ "$ERROR_SIGNALS" -gt 0 ] && [ -f "$JARVIS_DIR/hooks/metaclaw_extract.py" ]; then
-        nohup python3 "$JARVIS_DIR/hooks/metaclaw_extract.py" "$TRANSCRIPT" "$SESSION_ID" >> "$LOG_DIR/metaclaw.log" 2>&1 &
+    if [ "$ERROR_SIGNALS" -gt 0 ]; then
+        nohup python3 "$JARVIS_DIR/hooks/metaclaw_extract.py" "$TRANSCRIPT" "$SESSION_ID" --mode failure >> "$LOG_DIR/metaclaw.log" 2>&1 &
+    elif [ "$TOOL_COUNT" -ge 5 ]; then
+        # Clean substantive session — extract validated patterns (Haiku will mostly return NO_LESSON which is fine)
+        nohup python3 "$JARVIS_DIR/hooks/metaclaw_extract.py" "$TRANSCRIPT" "$SESSION_ID" --mode success >> "$LOG_DIR/metaclaw.log" 2>&1 &
     fi
 fi
 
 # ── MetaClaw index: reindex learned/*.md when extraction wrote new lessons ──
 # (The extractor runs in background; we can't know here if it wrote. So we
-# reindex opportunistically whenever any skills/learned/ file was touched.)
+# reindex opportunistically whenever any skills/learned/ file was touched.
+# After reindexing, populate embeddings via Ollama for semantic search.)
 if [ -n "$FILES_TOUCHED" ] && echo "$FILES_TOUCHED" | grep -q "skills/learned/"; then
-    cd "$JARVIS_DIR" && python3 memory/memory_indexer.py \
-        --source-dir "$JARVIS_DIR/skills/learned" \
-        --index-path "$JARVIS_DIR/skills/learned/learned_index.json" \
-        >> "$LOG_DIR/metaclaw.log" 2>&1 &
+    cd "$JARVIS_DIR" && (
+        python3 memory/memory_indexer.py \
+            --source-dir "$JARVIS_DIR/skills/learned" \
+            --index-path "$JARVIS_DIR/skills/learned/learned_index.json" \
+            && python3 memory/embed_learned.py \
+            --index-path "$JARVIS_DIR/skills/learned/learned_index.json"
+    ) >> "$LOG_DIR/metaclaw.log" 2>&1 &
 fi
 
 exit 0

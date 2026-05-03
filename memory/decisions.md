@@ -1,6 +1,6 @@
 # Decisions Memory
 
-> L2 — Loaded on demand. Recent decisions with rationale. Cap: 6,000 chars. Prune older decisions when full.
+> L2 — Loaded on demand. Recent decisions with rationale. Cap: 15,000 chars (recalibrated for Opus 4.7). Prune older decisions when full — older decisions whose rationale no longer informs current work go first.
 >
 > JARVIS appends here when you make a non-obvious judgment call and the reasoning matters for future context. Empty on first run.
 

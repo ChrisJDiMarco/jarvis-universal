@@ -22,7 +22,9 @@
 | Deep Search Harness | `deep-search.md` | Any retrieval task — used by researcher agent + researcher-deep COLLECT phase |
 | Persistent Daemon | `persistent-daemon.md` | "monitor", "alert me when", "watch for" |
 | Browser Automation | `browser-automation.md` | "open", "go to", "click", "scrape", "send message", "run on mac" |
-| Alan Morning Brief | `alan-morning-brief.md` | Alan's 8am cron (STANDBY — Alan not active yet) |
+| **Karpathy Loop** | `karpathy-loop.md` | "karpathy loop", "auto-research", "self-optimize", "run experiments overnight", "optimize [metric] automatically" |
+| **Heartbeat Agent** | `heartbeat.md` | "add a heartbeat", "proactive JARVIS", "check in on me", "monitor without being asked", "autonomous check-ins" |
+| **Agent Infrastructure Audit** | `agent-infrastructure-audit.md` | "infrastructure audit", "50x gap", "agent friction", "optimize stack for agents", "agent-native" |
 
 ---
 
@@ -56,8 +58,6 @@
 |-------|------|----------------|
 | Competitive Intel | `competitive-intel.md` | "research [company]", "competitive brief", "intel on [competitor]" |
 | Funded Company Analyzer | `funded-company-analyzer.md` | "find the play on [company]", "reverse engineer [company]", "replicate [company]" |
-| Crucix | `crucix.md` | "intelligence briefing", "open crucix", "market signals", "osint", "risk level" |
-| Paperclip | `paperclip.md` | "open paperclip", "company dashboard", "hire an agent", "agent team" |
 
 ---
 

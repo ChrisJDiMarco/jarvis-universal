@@ -1,7 +1,7 @@
 # Relationships Memory
 
 > L2 — Key contacts, communication styles, and relationship context.
-> Cap: 6,000 chars.
+> Cap: 15,000 chars (recalibrated for Opus 4.7).
 >
 > Populated gradually. Each person who JARVIS regularly drafts communications to or researches on your behalf gets a short block.
 

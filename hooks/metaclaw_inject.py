@@ -27,18 +27,36 @@ JARVIS_DIR = Path(os.environ.get("JARVIS_DIR", _SCRIPT_ROOT))
 LEARNED_INDEX = JARVIS_DIR / "skills" / "learned" / "learned_index.json"
 MEMORY_DIR = JARVIS_DIR / "memory"
 
-# Reuse the existing BM25 search implementation so we don't duplicate tokenizer
-# or scoring logic.
+# Use semantic search (Ollama embeddings) with BM25 fallback. The semantic_search
+# module handles the fallback transparently — if Ollama is down or chunks aren't
+# embedded yet, it returns BM25 results. BM25 import is lazy so semantic-only
+# environments (no rank-bm25) still work.
 sys.path.insert(0, str(MEMORY_DIR))
 try:
-    from memory_search import search  # type: ignore
+    from semantic_search import search_semantic  # type: ignore
 except ImportError:
-    print("ERROR: memory_search.py not found next to memory/", file=sys.stderr)
+    print("ERROR: semantic_search.py not found next to memory/", file=sys.stderr)
     sys.exit(1)
 
 
+def _bm25_search_lazy(query: str, top_k: int, index_path):
+    # memory_search.py prints + sys.exit(1)s at module-load if rank-bm25 isn't
+    # installed. Suppress the noise and degrade gracefully.
+    import io
+    import contextlib
+    try:
+        with contextlib.redirect_stdout(io.StringIO()):
+            from memory_search import search as bm25_search  # type: ignore
+        return bm25_search(query, top_k=top_k, index_path=index_path)
+    except (ImportError, SystemExit):
+        return []
+
+
 HEADER = "## Lessons from Previous Runs (apply these before executing)\n"
-MIN_SCORE = 1.0  # BM25 score floor — filters weak matches
+# Floors are mode-specific: cosine similarity is in [0, 1]; BM25 raw scores
+# are unbounded but typically <10 for relevant matches.
+MIN_SEMANTIC_SCORE = 0.55
+MIN_BM25_SCORE = 1.0
 
 
 RULE_RE = re.compile(r"\*\*Rule\*\*:\s*(.+?)(?=\s*\*\*|$)", re.DOTALL)
@@ -76,7 +94,18 @@ def main() -> int:
     parser.add_argument("query", help="Task description to match against lessons")
     parser.add_argument("--top", type=int, default=5)
     parser.add_argument("--silent-if-empty", action="store_true")
-    parser.add_argument("--min-score", type=float, default=MIN_SCORE)
+    parser.add_argument(
+        "--min-score",
+        type=float,
+        default=None,
+        help="Override floor (default: 0.55 for semantic, 1.0 for BM25)",
+    )
+    parser.add_argument(
+        "--mode",
+        choices=["auto", "semantic", "bm25"],
+        default="auto",
+        help="Force a search mode. 'auto' tries semantic first, falls back to BM25.",
+    )
     args = parser.parse_args()
 
     if not LEARNED_INDEX.exists():
@@ -84,8 +113,17 @@ def main() -> int:
             print(f"Lessons index not found at {LEARNED_INDEX}.", file=sys.stderr)
         return 0
 
-    results = search(args.query, top_k=args.top, index_path=LEARNED_INDEX)
-    results = [r for r in results if r["score"] >= args.min_score]
+    if args.mode == "bm25":
+        results = _bm25_search_lazy(args.query, top_k=args.top, index_path=LEARNED_INDEX)
+        floor = args.min_score if args.min_score is not None else MIN_BM25_SCORE
+    else:
+        results, mode_used = search_semantic(args.query, top_k=args.top, index_path=LEARNED_INDEX)
+        if args.min_score is not None:
+            floor = args.min_score
+        else:
+            floor = MIN_SEMANTIC_SCORE if mode_used == "semantic" else MIN_BM25_SCORE
+
+    results = [r for r in results if r["score"] >= floor]
 
     if not results and args.silent_if_empty:
         return 0

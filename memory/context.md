@@ -3,7 +3,7 @@
 > L2 — Loaded on demand when the session topic warrants it.
 > Populated during first run based on detected archetype. Updated as JARVIS learns more about your work.
 
-Target size: keep under 10,000 chars. Compress aggressively when it grows.
+Target size: keep under 25,000 chars (recalibrated for Opus 4.7). Drop dead entries before compressing live ones.
 
 ---
 

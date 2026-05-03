@@ -1,17 +1,21 @@
 #!/usr/bin/env python3
 """
 MetaClaw Extractor
-Analyzes a Claude Code session transcript for failure+recovery patterns and
-extracts a structured lesson via Haiku. Writes the lesson to the appropriate
-file in skills/learned/.
+Analyzes a Claude Code session transcript and extracts structured lessons via Haiku.
+Writes lessons to the appropriate file in skills/learned/.
+
+Two modes:
+  - failure (default): extract from sessions that had tool errors → recovery
+  - success: extract validated-pattern lessons from clean substantive sessions
 
 Runs in the background from stop_hook.sh. Fails silently on missing deps so it
 never blocks the user's terminal.
 
 Usage:
-    python3 hooks/metaclaw_extract.py <transcript_path> [session_id]
+    python3 hooks/metaclaw_extract.py <transcript_path> [session_id] [--mode failure|success]
 """
 
+import argparse
 import json
 import os
 import re
@@ -27,15 +31,18 @@ LOG_FILE = JARVIS_DIR / "logs" / "metaclaw.log"
 HAIKU_MODEL = "claude-haiku-4-5-20251001"
 MAX_TRANSCRIPT_MSGS = 200
 MIN_ERROR_SIGNALS = 1
+MIN_SUCCESS_TOOL_CALLS = 5  # don't bother extracting from trivial sessions
 VALID_CATEGORIES = {
     "tool-routing",
     "error-recovery",
     "prompt-patterns",
     "workflow-patterns",
     "integration-gotchas",
+    "validated-patterns",
+    "vibe-coding",
 }
 
-EXTRACTION_PROMPT = """You are the MetaClaw lesson extractor. Analyze the failure+recovery transcript below and extract AT MOST ONE structured lesson per category.
+FAILURE_PROMPT = """You are the MetaClaw lesson extractor. Analyze the failure+recovery transcript below and extract AT MOST ONE structured lesson per category.
 
 Rules:
 - Only extract a lesson if a REAL failure+recovery happened (tool errored then retried, wrong approach then corrected, etc.). If the session was clean, output exactly "NO_LESSON" and nothing else.
@@ -54,6 +61,31 @@ Output format (one block per lesson, no other text):
 *Last seen: DATE_PLACEHOLDER*
 
 CATEGORY: [one of: tool-routing, error-recovery, prompt-patterns, workflow-patterns, integration-gotchas]
+
+If multiple categories apply, output multiple blocks separated by blank lines.
+"""
+
+SUCCESS_PROMPT = """You are the MetaClaw success-pattern extractor. Analyze the SUCCESSFUL session transcript below and extract AT MOST ONE non-obvious pattern lesson per category.
+
+Rules:
+- Only extract a lesson if there was a NON-OBVIOUS validated approach worth repeating — an unusual tool routing that worked, a prompt phrasing that produced clean output, a workflow ordering the user accepted without correction, an integration trick. If the session was routine/obvious, output exactly "NO_LESSON" and nothing else.
+- Watch for quiet user confirmations ("perfect, do that", "yes exactly", or simply accepting the output without pushback after an unusual choice). Quiet acceptance of a non-obvious approach IS a signal.
+- Each lesson must be actionable. A future agent should apply the pattern without re-reading the transcript.
+- Do NOT quote conversation content. Distill into rules only.
+- Keep each lesson under 180 words.
+- Bias toward NO_LESSON. Most successful sessions are not lesson-worthy.
+
+Output format (one block per lesson, no other text):
+
+### [kebab-slug] — [category] (confidence: MEDIUM, seen: 1x)
+**When**: [trigger context]
+**Pattern**: [one-sentence pattern]
+**Why it worked**: [the insight]
+**How to apply**: [what to repeat]
+**Applies to**: [comma-separated agents/tools/skills]
+*Last seen: DATE_PLACEHOLDER*
+
+CATEGORY: [one of: validated-patterns, prompt-patterns, workflow-patterns, tool-routing, vibe-coding]
 
 If multiple categories apply, output multiple blocks separated by blank lines.
 """
@@ -87,6 +119,26 @@ def count_error_signals(transcript_path: Path) -> int:
                 ):
                     errors += 1
     return errors
+
+
+def count_tool_calls(transcript_path: Path) -> int:
+    """Count assistant tool_use entries. Used to gate success-mode extraction."""
+    calls = 0
+    with transcript_path.open("r", encoding="utf-8", errors="replace") as f:
+        for line in f:
+            try:
+                entry = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if entry.get("type") != "assistant":
+                continue
+            content = entry.get("message", {}).get("content")
+            if not isinstance(content, list):
+                continue
+            for item in content:
+                if isinstance(item, dict) and item.get("type") == "tool_use":
+                    calls += 1
+    return calls
 
 
 def load_compact_trace(transcript_path: Path, max_msgs: int) -> str:
@@ -172,30 +224,51 @@ def append_lesson(category: str, block: str) -> None:
 
 
 def main() -> int:
-    if len(sys.argv) < 2:
-        print("Usage: metaclaw_extract.py <transcript_path> [session_id]", file=sys.stderr)
-        return 1
+    parser = argparse.ArgumentParser(description="MetaClaw lesson extractor")
+    parser.add_argument("transcript", help="Path to Claude Code transcript JSONL")
+    parser.add_argument("session_id", nargs="?", default="unknown")
+    parser.add_argument(
+        "--mode",
+        choices=["failure", "success"],
+        default="failure",
+        help="failure: extract from error+recovery sessions. success: extract validated patterns from clean substantive sessions.",
+    )
+    args = parser.parse_args()
 
-    transcript = Path(sys.argv[1])
-    session_id = sys.argv[2] if len(sys.argv) > 2 else "unknown"
+    transcript = Path(args.transcript)
+    session_id = args.session_id
+    mode = args.mode
 
     if not transcript.is_file():
         log(f"ERROR: transcript not found: {transcript}")
         return 1
 
-    error_count = count_error_signals(transcript)
-    if error_count < MIN_ERROR_SIGNALS:
-        log(f"SKIP session {session_id}: {error_count} error signals (need {MIN_ERROR_SIGNALS})")
-        return 0
-
-    log(f"Session {session_id}: {error_count} error signals — extracting")
+    if mode == "failure":
+        error_count = count_error_signals(transcript)
+        if error_count < MIN_ERROR_SIGNALS:
+            log(f"SKIP session {session_id} [failure]: {error_count} error signals")
+            return 0
+        log(f"Session {session_id} [failure]: {error_count} error signals — extracting")
+        prompt_template = FAILURE_PROMPT
+    else:
+        # success mode: only fire on substantive clean sessions
+        error_count = count_error_signals(transcript)
+        if error_count > 0:
+            log(f"SKIP session {session_id} [success]: had {error_count} errors — failure mode handles this")
+            return 0
+        tool_calls = count_tool_calls(transcript)
+        if tool_calls < MIN_SUCCESS_TOOL_CALLS:
+            log(f"SKIP session {session_id} [success]: only {tool_calls} tool calls (need {MIN_SUCCESS_TOOL_CALLS})")
+            return 0
+        log(f"Session {session_id} [success]: {tool_calls} tool calls, 0 errors — extracting validated patterns")
+        prompt_template = SUCCESS_PROMPT
 
     trace = load_compact_trace(transcript, MAX_TRANSCRIPT_MSGS)
     if not trace:
-        log(f"SKIP session {session_id}: empty trace")
+        log(f"SKIP session {session_id} [{mode}]: empty trace")
         return 0
 
-    prompt = EXTRACTION_PROMPT + "\n\nTRANSCRIPT (JSONL):\n" + trace
+    prompt = prompt_template + "\n\nTRANSCRIPT (JSONL):\n" + trace
     response = call_haiku(prompt)
     if response is None:
         return 1
@@ -205,12 +278,12 @@ def main() -> int:
 
     blocks = parse_blocks(response)
     if not blocks:
-        log(f"Session {session_id}: Haiku found no extractable lessons")
+        log(f"Session {session_id} [{mode}]: Haiku found no extractable lessons")
         return 0
 
     for category, block in blocks:
         append_lesson(category, block)
-        log(f"Session {session_id}: wrote lesson to {category}.md")
+        log(f"Session {session_id} [{mode}]: wrote lesson to {category}.md")
 
     return 0
 

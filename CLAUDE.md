@@ -137,7 +137,7 @@ When builder receives a coding or engineering task, delegate to the appropriate 
 | Layer | File | Size | When |
 |-------|------|------|------|
 | L0 — Identity | `memory/core.md` (content above `<!-- L0 END -->` marker) | ~200 tokens | Always |
-| L1 — Critical Facts | `memory/L1-critical-facts.md` | ~300 tokens | Always |
+| L1 — Critical Facts | `memory/L1-critical-facts.md` | ~1,500 tokens | Always |
 | L2 — Domain Context | `memory/context.md`, `memory/decisions.md`, `memory/learnings.md` | On demand | When topic relevant |
 | L3 — Deep Read | All remaining memory files | Full read | When explicitly needed or recovery mode |
 
@@ -152,22 +152,25 @@ When builder receives a coding or engineering task, delegate to the appropriate 
 ### On Session End
 1. Evaluate: "Have recent exchanges revealed preferences, status changes, or patterns worth persisting?"
 2. If yes: run Memory Write Loop (security scan → check cap → write → log)
-3. Update `memory/L1-critical-facts.md` if any L1-tier facts changed (keep it lean — ~300 tokens max)
+3. Update `memory/L1-critical-facts.md` if any L1-tier facts changed (target ~1,500 tokens — Opus 4.7 calibration)
 4. Log update to `logs/memory-updates.log`
 
 ### Before Context Compression
 If you notice the context window approaching capacity mid-session, **write memory before it compresses** — do not wait for session end. The PreCompact hook at `hooks/precompact_hook.sh` runs automatically and saves session state. If it drops a flag at `logs/precompact-flag.md`, the next session is in recovery mode and should load L2+L3 before continuing.
 
 ### Memory File Caps
+
+> Caps recalibrated for Opus 4.7. Old caps were Sonnet-3.5-era and forced premature compression of valuable signal. The cap is now a forcing function for dropping dead entries, not a context-window guard.
+
 | File | Max Chars | Purpose |
 |------|-----------|---------|
-| L1-critical-facts.md | 1,200 | Always-loaded critical facts — keep lean (loaded every session) |
-| core.md | 6,000 | Operator identity, archetype, priorities, working style |
-| context.md | 10,000 | Domain context: projects, clients, goals, tools |
-| decisions.md | 6,000 | Recent decisions with rationale |
-| learnings.md | 6,000 | Self-improved rules and patterns |
-| relationships.md | 6,000 | Key contacts and communication styles |
-| ai-intelligence.md | 8,000 | AI news/trend intelligence feed — compress aggressively |
+| L1-critical-facts.md | 5,000 | Always-loaded critical facts — keep lean (loaded every session) |
+| core.md | 8,000 | Operator identity, archetype, priorities, working style |
+| context.md | 25,000 | Domain context: projects, clients, goals, tools |
+| decisions.md | 15,000 | Recent decisions with rationale |
+| learnings.md | 20,000 | Self-improved rules and patterns — highest-leverage memory |
+| relationships.md | 15,000 | Key contacts and communication styles |
+| ai-intelligence.md | 25,000 | AI news/trend intelligence feed — fast-moving domain |
 | soul.md | 16,000 | Operating philosophy. Evolves slowly — don't rewrite casually |
 
 ---
@@ -205,6 +208,9 @@ When a repeatable pattern emerges (3+ times):
 | agent-teams | "build me a team", "spin up a team", "create a team of", complex multi-domain parallel work | Coordinated specialist agents with peer messaging, QA loops |
 | multi-agent-fanout | "in parallel", "simultaneously", "do all of this at once" | Dispatch independent tasks to multiple agents simultaneously |
 | persistent-daemon | "monitor", "alert me when", "watch for", "keep an eye on" | Proactive monitoring via scheduled tasks + alerts |
+| heartbeat | "add a heartbeat", "proactive JARVIS", "check in on me", "autonomous check-ins" | Proactive periodic scans — silent if clean, alert if action needed |
+| karpathy-loop | "karpathy loop", "auto-research", "self-optimize", "run experiments overnight", "optimize [metric]" | Auto-research architecture: define metric → run experiments → keep improvements → iterate |
+| agent-infrastructure-audit | "infrastructure audit", "50x gap", "agent friction", "optimize stack for agents" | Identify human-calibrated bottlenecks; prioritized fix list |
 | memory-management | "remember this", "update memory", session end, new facts | Memory write loop with cap enforcement |
 | morning-briefing | "morning briefing", "come online", "good morning", "what's on today" | Full daily briefing — calendar, priorities, inbox, goals |
 | weekly-review | "weekly review", "end of week", "how's the week looking" | Progress scoreboard + debrief + next-week priorities |
@@ -221,7 +227,7 @@ When a repeatable pattern emerges (3+ times):
 | huashu-design | "hi-fi prototype", "iOS prototype", "clickable demo", "slide deck", "keynote", "PPTX export", "design directions", "design critique", "5-dimension review", "motion design", "MP4 export", "infographic" | Agency-tier design pipeline: Core Asset Protocol (real brand assets, no hallucination) → Junior Designer workflow (assumptions + placeholders + iterate) → 5 schools × 20 philosophies advisor → HTML prototypes (iPhone/Android/macOS/browser frames, Playwright-tested) → editable PPTX (real text frames via html2pptx) → MP4/GIF motion (25fps base, 60fps interp, palette-optimized, 6 BGM tracks) → 5-dimension expert critique with radar chart. See `skills/huashu-design/SKILL.md`. **Personal-use license** — flag if commercial deliverable. |
 | seo-content-engine | "SEO content", "blog", "content calendar", "keyword gaps for [site]" | Competitor gap analysis → keyword targeting → article generation → publish |
 | voice-agent-builder | "build a voice agent", "set up a voice bot", "configure voice" | Voice persona + script + integration + test protocol |
-| metaclaw-learning | **autonomous** — Stop hook on any errored session + orchestrator injects before routing; manual triggers still work | Extract lessons from failures/successes → BM25-indexed → injected into future agent runs |
+| metaclaw-learning | **autonomous** — Stop hook fires on errored sessions (failure mode) and on clean substantive sessions ≥5 tool calls (success mode); orchestrator injects relevant lessons before routing | Extract lessons → semantic-indexed via Ollama embeddings (BM25 fallback) → injected into future agent runs |
 | grade | "/grade", "grade this", "grade the work", independent review | Fresh-session CTO grader — spawns Opus subagent with only the diff + original ask, no memory/chat context. Independent A-F grade + SHIP/FIX-FIRST/KILL verdict. |
 | semantic-code-search | "find where X is implemented", "who references Y", "where do we handle", paraphrased code/concept lookup across projects | Semantic retrieval over the whole JARVIS corpus (code + markdown) via local Ollama embeddings + Milvus. Optional — see `docs/semantic-code-search-setup.md`. |
 
@@ -375,7 +381,8 @@ Rules in `.claude/rules/` are automatically loaded by Claude Code and enforced o
 
 | Rule File | What It Enforces |
 |-----------|-----------------|
-| `coding-style.md` | Immutability, KISS/DRY/YAGNI, file size limits (800 max), naming conventions |
+| `coding-style.md` | Scope discipline, immutability, KISS/DRY/YAGNI, file size limits (800 max), naming conventions |
+| `karpathy-agent-principles.md` | The 5 Karpathy principles: simplicity first, verify by running, explore before planning, never assume state, goal-driven execution |
 | `security.md` | No hardcoded secrets, parameterized queries, XSS prevention, mandatory security checklist |
 | `testing.md` | 80%+ coverage, test-driven where applicable, unit + integration + E2E |
 | `git-workflow.md` | Commit format, PR process, branch naming |

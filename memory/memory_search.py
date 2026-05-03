@@ -6,9 +6,9 @@ Returns the top-k most relevant chunks with source file + section pointers,
 so JARVIS can load only the right L2/L3 files instead of guessing.
 
 Usage:
-    python3 memory/memory_search.py "Thinklet pricing decision"
-    python3 memory/memory_search.py "Lapse Engine launch timing" --top 5
-    python3 memory/memory_search.py "Kyle Morley contact" --top 3 --json
+    python3 memory/memory_search.py "product pricing decision"
+    python3 memory/memory_search.py "launch timing for [project]" --top 5
+    python3 memory/memory_search.py "primary client contact" --top 3 --json
 """
 
 import re
