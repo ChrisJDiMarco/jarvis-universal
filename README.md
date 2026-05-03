@@ -104,7 +104,7 @@ graph TD
     MEM --> L2["L2: Domain Context<br/><i>loaded on demand</i>"]
     MEM --> L3["L3: Deep History<br/><i>recovery mode</i>"]
 
-    ORCH --> SK["📚 Skills Library<br/>290+ playbooks"]
+    ORCH --> SK["📚 Skills Library<br/>230+ playbooks"]
     ORCH --> MC["🧬 MetaClaw<br/><i>learns from failures</i>"]
 
     style You fill:#4f46e5,color:#fff
@@ -124,10 +124,10 @@ JARVIS never asks the same question twice. Memory is stored in structured, cappe
 ```
 Session Start
 │
-├── L0 — Identity (~200 tokens) ········· ALWAYS loaded
+├── L0 — Identity (~2,000 tokens) ······· ALWAYS loaded
 │   └── Who you are, archetype, working style
 │
-├── L1 — Critical Facts (~300 tokens) ··· ALWAYS loaded
+├── L1 — Critical Facts (~1,500 tokens)  ALWAYS loaded
 │   └── Active focus, constraints, preferences
 │
 ├── L2 — Domain Context ················· Loaded when relevant
@@ -141,37 +141,54 @@ Session Start
 
 **At session end**, JARVIS evaluates what it learned and writes updates to the appropriate layer. The index rebuilds automatically.
 
+Caps are calibrated for Opus 4.7 (L1 5k chars, context 25k, learnings 20k, ai-intelligence 25k). The cap is a forcing function for dropping dead entries — not a context-window guard.
+
 ```bash
-# BM25 search across all memory files (built-in, no external DB)
+# Semantic search via Ollama embeddings (cosine similarity), with transparent BM25 fallback
 python3 memory/memory_search.py "what did we decide about pricing" --top 3
-python3 memory/memory_search.py "CRM tool decision" --top 5
+python3 memory/semantic_search.py "anything about onboarding flow" --index-path skills/learned/learned_index.json --top 5
 ```
 
 ---
 
 ## 🧬 MetaClaw — The Self-Improvement Loop
 
+Two modes, both autonomous via the Stop hook:
+
 ```
-Error / Unexpected Result
-        │
-        ▼
-   [ Extract Lesson ]
-   What happened? Why? What rule prevents it?
-        │
-        ▼
-   [ Store in skills/learned/ ]
-   Categorized by type: tool-routing, workflow-patterns,
-   vibe-coding, integration-gotchas, prompt-patterns
-        │
-        ▼
-   [ Inject on Next Run ]
-   Relevant agents receive lessons before executing
-        │
-        ▼
-   Immunity — same mistake never happens again
+                           ┌─ FAILURE MODE ────────────────┐
+                           │                                │
+Session ends ──┬─ errors? ─┼─► extract error+recovery       │
+               │           │   lessons                      │
+               │           └─► skills/learned/{category}.md │
+               │
+               │           ┌─ SUCCESS MODE ─────────────────┐
+               │           │ ≥5 tool calls AND 0 errors     │
+               └─ clean? ──┼─► extract validated patterns   │
+                           │   (incl. quiet user            │
+                           │    acceptances as signal)      │
+                           └─► skills/learned/{category}.md │
+
+Categories: tool-routing, workflow-patterns, vibe-coding,
+            integration-gotchas, prompt-patterns,
+            validated-patterns
+
+                           ▼
+                    [ Embed via Ollama ]
+                    nomic-embed-text → cosine index
+                    BM25 fallback if Ollama unreachable
+
+                           ▼
+                    [ Inject on Next Run ]
+                    Orchestrator prepends top-N lessons
+                    to delegated agent contexts
+
+                           ▼
+                Immunity from past mistakes
+                + repetition of validated patterns
 ```
 
-JARVIS ships with **pre-loaded lessons** from real-world usage — tool routing decisions, workflow architecture patterns, app-building gotchas, and prompt engineering rules already baked in from day one.
+The stop hook fires both branches with `nohup` so it never blocks the terminal. JARVIS ships with seed lessons from real-world usage. Embeddings are populated automatically by `memory/embed_learned.py` after every reindex (idempotent, falls back to BM25 if Ollama isn't running).
 
 ---
 
@@ -259,8 +276,10 @@ MCPs give JARVIS direct API access to your tools, replacing slower browser autom
 │   ├── decisions.md             Decision log with rationale
 │   ├── learnings.md             Extracted patterns
 │   ├── soul.md                  Operating philosophy
-│   ├── memory_indexer.py        BM25 index builder
-│   └── memory_search.py         CLI search tool
+│   ├── memory_indexer.py        Index builder
+│   ├── memory_search.py         BM25 CLI search
+│   ├── semantic_search.py       Ollama-embeddings search (cosine, with BM25 fallback)
+│   └── embed_learned.py         Populates embeddings into the learned-lessons index
 │
 ├── 🤖 .claude/agents/         ← 63 specialist agents
 │   ├── orchestrator.md          Chief of Staff
@@ -270,14 +289,16 @@ MCPs give JARVIS direct API access to your tools, replacing slower browser autom
 │   ├── analyst.md               Market + SEO + competitive
 │   ├── [... 58 more agents]
 │
-├── 📚 skills/                 ← 290+ skill playbooks
+├── 📚 skills/                 ← 230+ skill playbooks
 │   ├── researcher-deep.md       6-phase research pipeline
 │   ├── vibecode-app-builder.md  25-prompt app build process
 │   ├── elite-web-ui/            2026-tier web design system
 │   ├── competitive-intel.md     Validated competitor research
+│   ├── karpathy-loop.md         Auto-research architecture
+│   ├── heartbeat.md             Proactive periodic scans
 │   ├── metaclaw-learning.md     Self-improvement protocol
 │   ├── learned/                 Auto-generated lessons (MetaClaw)
-│   └── ecc/                     237 engineering skill playbooks
+│   └── ecc/                     181 engineering skill playbooks
 │
 ├── ⚙️  setup/
 │   ├── archetypes.md            8 operator archetypes + routing
