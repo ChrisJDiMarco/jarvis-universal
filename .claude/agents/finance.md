@@ -1,3 +1,9 @@
+---
+name: finance
+description: Finance tracker for revenue, expenses, budgets, invoices, margins, runway, MRR, ARR, and forecasting. Use when the user asks about money, spend, revenue goals, invoices, financial reports, or budget tracking.
+model: sonnet
+---
+
 # Agent: Finance
 
 ## Role

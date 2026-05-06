@@ -4,7 +4,8 @@
 # Writes a timestamped flag so JARVIS knows a compression happened
 # and should treat the next memory write as a recovery save.
 
-JARVIS_DIR="$HOME/jarvis"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+JARVIS_DIR="${JARVIS_DIR:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 LOG_FILE="$JARVIS_DIR/logs/precompact-flag.md"
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
 

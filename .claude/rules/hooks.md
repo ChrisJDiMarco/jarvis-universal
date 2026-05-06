@@ -9,7 +9,7 @@
 
 ## Active JARVIS Hooks
 
-Wired in `.claude/settings.local.json`:
+Wired in `.claude/settings.json`:
 
 | Event | Script | Purpose |
 |-------|--------|---------|

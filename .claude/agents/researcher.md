@@ -1,3 +1,9 @@
+---
+name: researcher
+description: Senior researcher for deep dives, competitive intelligence, market research, literature reviews, source validation, and cited briefs. Use when the user asks to research, compare evidence, investigate, or produce a grounded report.
+model: sonnet
+---
+
 # Agent: Researcher
 
 ## Role

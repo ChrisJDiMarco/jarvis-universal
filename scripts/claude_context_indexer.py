@@ -13,7 +13,7 @@ every 30 seconds until the server reports completion or failure.
 
 
 Usage:
-    python3 scripts/claude_context_indexer.py                 # indexes ~/jarvis
+    python3 scripts/claude_context_indexer.py                 # indexes this checkout
     python3 scripts/claude_context_indexer.py /path/to/repo   # indexes any dir
     JARVIS_ROOT=~/my-jarvis python3 scripts/claude_context_indexer.py
 
@@ -32,7 +32,8 @@ import sys
 import time
 from pathlib import Path
 
-DEFAULT_ROOT = Path(os.environ.get("JARVIS_ROOT", Path.home() / "jarvis")).expanduser()
+SCRIPT_ROOT = Path(__file__).resolve().parent.parent
+DEFAULT_ROOT = Path(os.environ.get("JARVIS_ROOT", SCRIPT_ROOT)).expanduser()
 PATH = Path(sys.argv[1]).expanduser() if len(sys.argv) > 1 else DEFAULT_ROOT
 POLL_INTERVAL_SEC = 30
 MAX_MINUTES = 45

@@ -4,7 +4,7 @@ JARVIS Wiki Builder
 Trigger: "build the wiki" or "compile the wiki"
 Scans all JARVIS knowledge files → compiles Obsidian wiki + graph.json for graph explorers
 
-Usage: python3 ~/jarvis/skills/wiki-builder.py
+Usage: python3 skills/wiki-builder.py
 """
 
 import os
@@ -13,7 +13,8 @@ import json
 from pathlib import Path
 from datetime import datetime
 
-JARVIS_ROOT = Path(os.path.expanduser("~/jarvis"))
+SCRIPT_ROOT = Path(__file__).resolve().parent.parent
+JARVIS_ROOT = Path(os.environ.get("JARVIS_ROOT", SCRIPT_ROOT)).expanduser()
 WIKI_ROOT   = JARVIS_ROOT / "wiki"
 GRAPH_FILE  = WIKI_ROOT / "graph.json"
 

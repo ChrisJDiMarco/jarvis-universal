@@ -20,11 +20,14 @@
 | Self-Healing Executor | `self-healing-executor.md` | "build and test", "auto-fix", deploy phase |
 | Deep Research | `researcher-deep.md` | "deep dive on", "deep research", "literature review on" |
 | Deep Search Harness | `deep-search.md` | Any retrieval task — used by researcher agent + researcher-deep COLLECT phase |
+| Semantic Code Search | `semantic-code-search.md` | "find where", "who references", "where do we handle" for concept-level code/doc lookup |
 | Persistent Daemon | `persistent-daemon.md` | "monitor", "alert me when", "watch for" |
 | Browser Automation | `browser-automation.md` | "open", "go to", "click", "scrape", "send message", "run on mac" |
 | **Karpathy Loop** | `karpathy-loop.md` | "karpathy loop", "auto-research", "self-optimize", "run experiments overnight", "optimize [metric] automatically" |
 | **Heartbeat Agent** | `heartbeat.md` | "add a heartbeat", "proactive JARVIS", "check in on me", "monitor without being asked", "autonomous check-ins" |
 | **Agent Infrastructure Audit** | `agent-infrastructure-audit.md` | "infrastructure audit", "50x gap", "agent friction", "optimize stack for agents", "agent-native" |
+| **JARVIS Control Plane** | `jarvis-control-plane.md` | "command center", "control center", "mission control", "agent OS dashboard", "OS interface", "War Room", "mobile bridge", "ClaudeClaw-style" |
+| **Grade** | `grade.md` | "/grade", "grade this", "grade the work", independent CTO review |
 
 ---
 
@@ -46,7 +49,9 @@
 | **App Studio** | `app-studio.md` | "web + mobile", "mobile app", "iOS app", "full-stack", "Appifex-style", "app studio" — multi-platform monorepo |
 | App Studio Templates | `app-studio-templates.md` | Quick-reference templates for App Studio builds (vision brief, build log, deploy manifest, monorepo init) |
 | Workflow Builder | `workflow-builder.md` | "build a workflow", "automate [X]", "new n8n workflow" |
+| JARVIS Control Plane | `jarvis-control-plane.md` | "build the JARVIS interface", "command center", "mission control", "channel gateway", "War Room" |
 | Elite Web UI | `elite-web-ui/SKILL.md` | "landing page", "make it animated", "premium UI", any visual web artifact |
+| Huashu Design | `huashu-design/SKILL.md` | "hi-fi prototype", "slide deck", "motion design", "design critique", "PPTX export" |
 | Voice Agent Builder | `voice-agent-builder.md` | "build a voice agent", "set up a voice bot", "configure voice" |
 | Video Builder | `video-builder.md` | "build a demo video", "product video", "Remotion" |
 
@@ -95,4 +100,4 @@ When a repeatable pattern emerges (3+ times doing the same type of task):
 ---
 
 ## Related
-[[CLAUDE]]  [[researcher-deep]]  [[deep-search]]  [[competitive-intel]]  [[content-creation]]  [[vibecode-app-builder]]  [[morning-briefing]]  [[weekly-review]]  [[memory-management]]  [[elite-web-ui]]  [[workflow-builder]]  [[metaclaw-learning]]  [[claim-verifier]]  [[self-healing-executor]]  [[persistent-daemon]]
+[[CLAUDE]]  [[researcher-deep]]  [[deep-search]]  [[competitive-intel]]  [[content-creation]]  [[vibecode-app-builder]]  [[morning-briefing]]  [[weekly-review]]  [[memory-management]]  [[elite-web-ui]]  [[workflow-builder]]  [[jarvis-control-plane]]  [[metaclaw-learning]]  [[claim-verifier]]  [[self-healing-executor]]  [[persistent-daemon]]

@@ -115,7 +115,7 @@ Never use Python/Pillow for image generation.
 6. **Verify** you have the right file — check the filename matches what just downloaded, not a previously cached image.
 7. **Copy to site folder** via osascript:
    ```applescript
-   do shell script "cp ~/Downloads/'Gemini_Generated_Image_[hash].png' /Users/chrisdimarco/jarvis/owners-inbox/hero-before.png"
+   do shell script "JARVIS_DIR=${JARVIS_DIR:-$HOME/jarvis}; cp ~/Downloads/'Gemini_Generated_Image_[hash].png' \"$JARVIS_DIR/owners-inbox/hero-before.png\""
    ```
 8. Repeat for the AFTER image. After copying, **scroll-test in the browser** to confirm the correct image shows up in the crossfade.
 
@@ -189,7 +189,7 @@ Instead:
    ```
 2. **Start if not running** (via osascript):
    ```applescript
-   do shell script "cd /Users/chrisdimarco/jarvis/owners-inbox && nohup python3 -m http.server 8099 > /tmp/httpserver.log 2>&1 &"
+   do shell script "JARVIS_DIR=${JARVIS_DIR:-$HOME/jarvis}; cd \"$JARVIS_DIR/owners-inbox\" && nohup python3 -m http.server 8099 > /tmp/httpserver.log 2>&1 &"
    ```
 3. **Open in Chrome:**
    ```

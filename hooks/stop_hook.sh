@@ -10,7 +10,8 @@
 # Input: Claude Code passes a JSON object on stdin:
 #   { "session_id": "...", "transcript_path": "...", "hook_event_name": "Stop", ... }
 
-JARVIS_DIR="$HOME/jarvis"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+JARVIS_DIR="${JARVIS_DIR:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 LOG_DIR="$JARVIS_DIR/logs"
 SESSION_LOG="$LOG_DIR/session-log.jsonl"
 ACTIVITY_LOG="$LOG_DIR/daily-activity.md"
@@ -43,8 +44,8 @@ if [ -n "$TRANSCRIPT" ] && [ -f "$TRANSCRIPT" ] && command -v jq >/dev/null 2>&1
     # Count tool_use entries in the transcript
     TOOL_COUNT=$(jq -r 'select(.type=="assistant") | .message.content[]? | select(.type=="tool_use") | .name' "$TRANSCRIPT" 2>/dev/null | wc -l | tr -d ' ')
 
-    # File writes = Write or Edit tool calls
-    FILE_WRITES=$(jq -r 'select(.type=="assistant") | .message.content[]? | select(.type=="tool_use" and (.name=="Write" or .name=="Edit" or .name=="NotebookEdit")) | .name' "$TRANSCRIPT" 2>/dev/null | wc -l | tr -d ' ')
+    # File writes = Write, Edit, MultiEdit, or NotebookEdit tool calls
+    FILE_WRITES=$(jq -r 'select(.type=="assistant") | .message.content[]? | select(.type=="tool_use" and (.name=="Write" or .name=="Edit" or .name=="MultiEdit" or .name=="NotebookEdit")) | .name' "$TRANSCRIPT" 2>/dev/null | wc -l | tr -d ' ')
 
     # Unique tool names used
     TOOLS_USED=$(jq -r 'select(.type=="assistant") | .message.content[]? | select(.type=="tool_use") | .name' "$TRANSCRIPT" 2>/dev/null | sort -u | tr '\n' ',' | sed 's/,$//')
@@ -52,8 +53,8 @@ if [ -n "$TRANSCRIPT" ] && [ -f "$TRANSCRIPT" ] && command -v jq >/dev/null 2>&1
     # First user message (truncated)
     FIRST_USER_MSG=$(jq -r 'select(.type=="user") | .message.content | if type=="string" then . else (.[]? | select(.type=="text") | .text) end' "$TRANSCRIPT" 2>/dev/null | head -1 | cut -c1-200)
 
-    # Files touched by Write/Edit
-    FILES_TOUCHED=$(jq -r 'select(.type=="assistant") | .message.content[]? | select(.type=="tool_use" and (.name=="Write" or .name=="Edit")) | .input.file_path // empty' "$TRANSCRIPT" 2>/dev/null | sort -u | head -10 | tr '\n' ',' | sed 's/,$//')
+    # Files touched by Write/Edit/MultiEdit/NotebookEdit
+    FILES_TOUCHED=$(jq -r 'select(.type=="assistant") | .message.content[]? | select(.type=="tool_use" and (.name=="Write" or .name=="Edit" or .name=="MultiEdit" or .name=="NotebookEdit")) | .input.file_path // empty' "$TRANSCRIPT" 2>/dev/null | sort -u | head -10 | tr '\n' ',' | sed 's/,$//')
 fi
 
 # Always: append a breadcrumb to session-log.jsonl

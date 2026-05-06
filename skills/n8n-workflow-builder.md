@@ -6,7 +6,9 @@
 ## Goal
 Design and deploy reusable n8n automations using proven patterns — no reinventing from scratch each time.
 
-## Core Workflow Patterns (pre-built templates)
+## Core Workflow Pattern Specs
+
+These are canonical starter specs. If the referenced JSON file does not exist yet, generate it from the pattern, save it at the listed path, and document it in `n8n-configs/README.md` before deployment.
 
 ### Pattern 1: Lead Intake → GHL → Sequence Trigger
 **Use for**: Any new web lead that needs to enter follow-up
@@ -20,7 +22,7 @@ Trigger: Webhook (form submission)
 → Slack/iMessage: Notify Chris if lead score ≥ 8
 ```
 
-Config file: `n8n-configs/lead-intake.json`
+Config file to create/update: `n8n-configs/lead-intake.json`
 
 ### Pattern 2: Retell Call Complete → GHL Update
 **Use for**: After AI voice call, log outcome and trigger next step
@@ -36,7 +38,7 @@ Trigger: Retell Webhook (call_ended)
 → If outcome = callback: Set GHL task for follow-up
 ```
 
-Config file: `n8n-configs/retell-bridge.json`
+Config file to create/update: `n8n-configs/retell-bridge.json`
 
 ### Pattern 3: No-Show Recovery
 **Use for**: When a booked appointment is missed
@@ -51,7 +53,7 @@ Trigger: GHL Webhook (appointment_no_show tag added)
 → GHL: Add tag (no-show-cold) and remove from active sequences
 ```
 
-Config file: `n8n-configs/no-show-recovery.json`
+Config file to create/update: `n8n-configs/no-show-recovery.json`
 
 ### Pattern 4: Reddit Scout → Prospect Intake
 **Use for**: Converting Reddit scout output to scored leads in GHL
@@ -67,7 +69,7 @@ Trigger: Schedule (daily 7am) or Manual
 → iMessage: Daily summary to Chris ("Found X leads, Y hot")
 ```
 
-Config file: `n8n-configs/reddit-scout.json`
+Config file to create/update: `n8n-configs/reddit-scout.json`
 
 ### Pattern 5: AI Intelligence Daily Brief
 **Use for**: Morning AI landscape sweep
@@ -80,7 +82,7 @@ Trigger: Schedule (8:09am daily)
 → Write: Append to owners-inbox/morning-brief-[date].md
 ```
 
-Config file: `n8n-configs/ai-intelligence.json`
+Config file to create/update: `n8n-configs/ai-intelligence.json`
 
 ## Build Process
 

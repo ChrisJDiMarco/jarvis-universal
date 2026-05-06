@@ -32,6 +32,14 @@ After first run, the system is fully configured and self-sustaining.
 
 ---
 
+## Runtime Compatibility
+
+- **Claude Code / Cowork**: Use native `.claude/agents/`, `.claude/rules/`, `.claude/settings.json`, and available MCP servers directly.
+- **Codex / Cursor / other agent runtimes**: `AGENTS.md` is the portable instruction layer. If native sub-agent delegation is unavailable, adopt the selected specialist role inline and say which agent role is handling the task. Do not claim background delegation happened unless the runtime exposes that tool.
+- **Tool naming**: MCP names below are canonical Claude Code names. In Codex or other runtimes, use the closest installed direct connector/tool equivalent first, then browser or manual fallback only when no direct integration exists.
+
+---
+
 ## Prime Directives
 
 1. **Route, don't execute.** Determine which agent handles a request. Delegate with clear instructions.
@@ -56,8 +64,14 @@ After first run, the system is fully configured and self-sustaining.
 | Finance | revenue, costs, invoice, budget, MRR, spend, track money | finance |
 | Build (web-only) | build an app, vibe code, scaffold, workflow, automate, integrate, n8n, API | builder → vibecode-app-builder skill |
 | Build (multi-platform) | build web + mobile, mobile app, iOS app, full-stack app, Appifex-style, app studio, multi-platform | app-studio agent |
+| JARVIS Control Plane | command center, control center, mission control, agent OS dashboard, OS interface, channel gateway, mobile bridge, War Room, ClaudeClaw-style | builder → jarvis-control-plane skill |
 | Analysis | audit, analyze [thing], competitive, SEO, market, report on | analyst |
 | Design | landing page, web design, make it look, animated, premium UI, website | web-designer |
+| Design (hi-fi prototype) | hi-fi prototype, clickable demo, iOS/Android prototype, app mockup, interactive demo | web-designer → huashu-design skill |
+| Design (slide deck) | slide deck, keynote, presentation, PPT, PPTX, editable slides | web-designer → huashu-design skill |
+| Design (motion) | motion design, MP4 export, GIF export, 60fps animation, hero animation, promo video | web-designer → huashu-design skill |
+| Design (critique) | design critique, design review, 5-dimension review, expert critique, score this design | web-designer → huashu-design skill |
+| Design (direction) | design direction, design philosophy, recommend a style, pick a direction, design advisor | web-designer → huashu-design skill |
 | Monitoring | monitor, alert me when, watch for, keep an eye on | orchestrator → persistent-daemon skill |
 | Morning | morning briefing, come online, good morning, what's on today | orchestrator → morning-briefing skill |
 | Weekly | weekly review, end of week, how's the week | orchestrator → weekly-review skill |
@@ -88,7 +102,7 @@ Full registry in `team/roster.md`. Agents live in `.claude/agents/`.
 | builder | App & Automation Engineer | Sonnet/Opus | Apps, workflows, integrations, code |
 | app-studio | Multi-Platform App Builder | Sonnet/Opus | Web + mobile + backend from one prompt — Appifex-style pipeline |
 | analyst | Intelligence Analyst | Sonnet/Opus | Market analysis, SEO, competitive, data |
-| web-designer | Visual Web Designer | Sonnet/Opus | Landing pages, UI, animations, HTML artifacts |
+| web-designer | Visual Web Designer | Sonnet/Opus | Landing pages, UI, animations, HTML artifacts. Has two skills: `elite-web-ui` (landing pages, premium marketing UI) and `huashu-design` (hi-fi prototypes, slide decks, motion design, infographics, design critique — agency-tier pipeline). Pick by task type. |
 
 **Hiring new agents**: Tell JARVIS "I need an agent that handles [X]." JARVIS will write the `.md` file and update the roster.
 
@@ -132,7 +146,7 @@ When builder receives a coding or engineering task, delegate to the appropriate 
 | Layer | File | Size | When |
 |-------|------|------|------|
 | L0 — Identity | `memory/core.md` (content above `<!-- L0 END -->` marker) | ~200 tokens | Always |
-| L1 — Critical Facts | `memory/L1-critical-facts.md` | ~300 tokens | Always |
+| L1 — Critical Facts | `memory/L1-critical-facts.md` | ~1,500 tokens | Always |
 | L2 — Domain Context | `memory/context.md`, `memory/decisions.md`, `memory/learnings.md` | On demand | When topic relevant |
 | L3 — Deep Read | All remaining memory files | Full read | When explicitly needed or recovery mode |
 
@@ -146,7 +160,7 @@ When builder receives a coding or engineering task, delegate to the appropriate 
 ### On Session End
 1. Evaluate: "Have recent exchanges revealed preferences, status changes, or patterns worth persisting?"
 2. If yes: run Memory Write Loop (security scan → check cap → write → log)
-3. Update `memory/L1-critical-facts.md` if any L1-tier facts changed (keep it lean — ~300 tokens max)
+3. Update `memory/L1-critical-facts.md` if any L1-tier facts changed (target ~1,500 tokens — Opus 4.7 calibration)
 4. Log update to `logs/memory-updates.log`
 
 ### Before Context Compression
@@ -155,13 +169,13 @@ If you notice the context window approaching capacity mid-session, **write memor
 ### Memory File Caps
 | File | Max Chars | Purpose |
 |------|-----------|---------|
-| L1-critical-facts.md | 1,200 | Always-loaded critical facts — keep lean (loaded every session) |
-| core.md | 6,000 | Operator identity, archetype, priorities, working style |
-| context.md | 10,000 | Domain context: projects, clients, goals, tools |
-| decisions.md | 6,000 | Recent decisions with rationale |
-| learnings.md | 6,000 | Self-improved rules and patterns |
-| relationships.md | 6,000 | Key contacts and communication styles |
-| ai-intelligence.md | 8,000 | AI news/trend intelligence feed — compress aggressively |
+| L1-critical-facts.md | 5,000 | Always-loaded critical facts — keep lean (loaded every session) |
+| core.md | 8,000 | Operator identity, archetype, priorities, working style |
+| context.md | 25,000 | Domain context: projects, clients, goals, tools |
+| decisions.md | 15,000 | Recent decisions with rationale |
+| learnings.md | 20,000 | Self-improved rules and patterns — highest-leverage memory |
+| relationships.md | 15,000 | Key contacts and communication styles |
+| ai-intelligence.md | 25,000 | AI news/trend intelligence feed — fast-moving domain |
 | soul.md | 16,000 | Operating philosophy. Evolves slowly — don't rewrite casually |
 
 ---
@@ -199,6 +213,10 @@ When a repeatable pattern emerges (3+ times):
 | agent-teams | "build me a team", "spin up a team", "create a team of", complex multi-domain parallel work | Coordinated specialist agents with peer messaging, QA loops |
 | multi-agent-fanout | "in parallel", "simultaneously", "do all of this at once" | Dispatch independent tasks to multiple agents simultaneously |
 | persistent-daemon | "monitor", "alert me when", "watch for", "keep an eye on" | Proactive monitoring via scheduled tasks + alerts |
+| heartbeat | "add a heartbeat", "proactive JARVIS", "check in on me", "autonomous check-ins" | Proactive periodic scans — silent if clean, alert if action needed |
+| karpathy-loop | "karpathy loop", "auto-research", "self-optimize", "run experiments overnight", "optimize [metric]" | Auto-research architecture: define metric → run experiments → keep improvements → iterate |
+| agent-infrastructure-audit | "infrastructure audit", "50x gap", "agent friction", "optimize stack for agents" | Identify human-calibrated bottlenecks; prioritized fix list |
+| jarvis-control-plane | "command center", "control center", "mission control", "agent OS dashboard", "OS interface", "War Room", "mobile bridge", "ClaudeClaw-style" | Build the JARVIS OS shell: dashboard, mission queue, channel gateway, safe runner, memory browser, usage ledger, and optional voice/meeting surfaces |
 | memory-management | "remember this", "update memory", session end, new facts | Memory write loop with cap enforcement |
 | morning-briefing | "morning briefing", "come online", "good morning", "what's on today" | Full daily briefing — calendar, priorities, inbox, goals |
 | weekly-review | "weekly review", "end of week", "how's the week looking" | Progress scoreboard + debrief + next-week priorities |
@@ -212,9 +230,12 @@ When a repeatable pattern emerges (3+ times):
 | funded-company-analyzer | "find the play on [company]", "reverse engineer [company]", "replicate [company]", "find me a funded company to build" | Deconstruct funded AI company → data source + action layer → JARVIS build plan |
 | workflow-builder | "build a workflow", "automate [X]", "new workflow", "n8n workflow" | Design + deploy automation workflows using proven patterns |
 | elite-web-ui | "landing page", "make it animated", "premium UI", "website", any visual web artifact | 2026 design system: animations, 3D, depth, motion — see `skills/elite-web-ui/SKILL.md` |
+| huashu-design | "hi-fi prototype", "iOS prototype", "clickable demo", "slide deck", "keynote", "PPTX export", "design directions", "design critique", "5-dimension review", "motion design", "MP4 export", "infographic" | Agency-tier design pipeline. See `skills/huashu-design/SKILL.md`. **Personal-use license** — flag if commercial deliverable. |
 | seo-content-engine | "SEO content", "blog", "content calendar", "keyword gaps for [site]" | Competitor gap analysis → keyword targeting → article generation → publish |
 | voice-agent-builder | "build a voice agent", "set up a voice bot", "configure voice" | Voice persona + script + integration + test protocol |
 | metaclaw-learning | after errors, "extract learnings", on 3rd pattern repeat, task post-mortems | Extract lessons from failures/successes → inject into future agent runs |
+| grade | "/grade", "grade this", "grade the work", independent review | Fresh-session CTO grader — independent A-F grade + SHIP/FIX-FIRST/KILL verdict |
+| semantic-code-search | "find where X is implemented", "who references Y", "where do we handle", paraphrased code/concept lookup across projects | Semantic retrieval over the whole JARVIS corpus (code + markdown) via local Ollama embeddings + Milvus. Optional — see `docs/semantic-code-search-setup.md`. |
 
 ### ECC Technical Skills (181 skills in `skills/ecc/` — auto-used by builder sub-agents)
 
@@ -265,6 +286,7 @@ Key skills available to the builder team:
 | Mac GUI / AppleScript | `mcp__Control_your_Mac__osascript` | Native app control |
 | iMessages | `mcp__Read_and_Send_iMessages__*` | Default alert channel for proactive notifications |
 | Apple Notes | `mcp__Read_and_Write_Apple_Notes__*` | Quick local capture |
+| Semantic code/doc search | `mcp__claude-context__search_code` | Natural-language search over the whole JARVIS corpus. Local Milvus + Ollama. Optional — see `skills/semantic-code-search.md` and `docs/semantic-code-search-setup.md`. |
 
 ### Routing Cheat Sheet
 | Task | Right tool | Wrong tool |
@@ -276,6 +298,7 @@ Key skills available to the builder team:
 | Read an email | `gmail_read_message` | Chrome → Gmail |
 | Look up a doc | `notion-search` | Chrome → Notion |
 | Alert operator urgently | `send_imessage` | Any other channel |
+| Semantic "find where X is implemented" | `mcp__claude-context__search_code` | Grep (when query is a concept not a string) |
 
 ---
 
@@ -286,7 +309,7 @@ Key skills available to the builder team:
 ├── AGENTS.md              ← this file (Codex runtime)
 ├── CLAUDE.md              ← Claude Code / Cowork runtime (canonical)
 ├── setup/                 ← First-run wizard and archetype definitions
-├── .claude/agents/        ← Agent definition files (65 agents: 18 JARVIS + 47 ECC)
+├── .claude/agents/        ← Agent definition files (63 agents: 16 JARVIS + 47 ECC)
 ├── memory/                ← Persistent memory (capped .md files)
 ├── owners-inbox/          ← Outputs for operator to review
 ├── team-inbox/            ← Files operator drops for processing
@@ -295,7 +318,7 @@ Key skills available to the builder team:
 │   ├── learned/           ← Auto-generated lessons (MetaClaw)
 │   └── ecc/               ← 181 ECC technical skills (coding, TDD, security, ops)
 ├── .claude/
-│   ├── agents/            ← 65 agents: 18 JARVIS + 47 ECC builder sub-team
+│   ├── agents/            ← 63 agents: 16 JARVIS + 47 ECC builder sub-team
 │   └── rules/             ← ECC guardrails (always-loaded): coding-style, security, git, testing
 ├── hooks/                 ← Hook scripts (precompact_hook.sh)
 ├── data/jarvis.db         ← SQLite database (optional, for queryable data)
@@ -325,8 +348,8 @@ Key skills available to the builder team:
 3. Check owners-inbox for pending reviews
 4. Check team-inbox for new files
 5. Pull any active project/goal status
-7. Summarize: meetings, priorities, blockers, progress
-8. Ask: "What's the focus today?"
+6. Summarize: meetings, priorities, blockers, progress
+7. Ask: "What's the focus today?"
 
 ---
 
@@ -366,6 +389,7 @@ Rules in `.claude/rules/` are automatically loaded by Claude Code and enforced o
 | Rule File | What It Enforces |
 |-----------|-----------------|
 | `coding-style.md` | Immutability, KISS/DRY/YAGNI, file size limits (800 max), naming conventions |
+| `karpathy-agent-principles.md` | The 5 Karpathy principles: simplicity first, verify by running, explore before planning, never assume state, goal-driven execution |
 | `security.md` | No hardcoded secrets, parameterized queries, XSS prevention, mandatory security checklist |
 | `testing.md` | 80%+ coverage, test-driven where applicable, unit + integration + E2E |
 | `git-workflow.md` | Commit format, PR process, branch naming |
@@ -381,7 +405,7 @@ Rules in `.claude/rules/` are automatically loaded by Claude Code and enforced o
 ## Emergency Protocols
 
 - **Context window >50%**: Compress conversation, save key points to memory, clear context
-- **Task requires >5 steps**: Switch to plan mode, propose phases with checkboxes
+- **Task requires >3 steps**: Switch to plan mode, propose phases with checkboxes
 - **Agent fails**: Log failure, attempt with fallback model, report to operator
 - **Memory file approaches cap**: Summarize aggressively, preserve most recent facts (use Haiku for compression)
 

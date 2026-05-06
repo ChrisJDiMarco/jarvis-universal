@@ -23,7 +23,7 @@ git clone https://github.com/ChrisJDiMarco/jarvis-universal.git ~/jarvis
 cd ~/jarvis
 ```
 
-The repo drops into `~/jarvis` by convention. You can install anywhere — just update any absolute paths in `CLAUDE.md` if you change it.
+The repo drops into `~/jarvis` by convention. You can install anywhere; project hooks resolve through Claude Code's `$CLAUDE_PROJECT_DIR`, and helper scripts default to the checkout they live in.
 
 ---
 
@@ -153,7 +153,13 @@ cd ~/jarvis
 git pull
 ```
 
-Your `memory/` directory is gitignored by default, so updates won't touch your personal context. Review the CHANGELOG for any breaking changes to skill / agent signatures.
+Starter memory templates are tracked so first run has files to populate. After you personalize JARVIS, treat `memory/*.md` as local operator state. If you plan to pull upstream changes into the same checkout, protect your personal memory files first:
+
+```bash
+git update-index --skip-worktree memory/*.md
+```
+
+Review the CHANGELOG for any breaking changes to skill / agent signatures.
 
 ---
 

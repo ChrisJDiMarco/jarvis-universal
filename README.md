@@ -27,7 +27,7 @@ You manage the process       →   Orchestrator routes, specialists execute
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Built with Claude](https://img.shields.io/badge/Built%20with-Claude%20Code-blueviolet)](https://claude.com/product/claude-code)
 [![Agents](https://img.shields.io/badge/Agents-63-blue)](/.claude/agents)
-[![Skills](https://img.shields.io/badge/Skills-290%2B-green)](./skills)
+[![Skills](https://img.shields.io/badge/Skills-230%2B-green)](./skills)
 [![Status](https://img.shields.io/badge/Status-Production-success)](./)
 
 [**Quick Start →**](#-setup) &nbsp;·&nbsp; [**What It Does →**](#-what-jarvis-does) &nbsp;·&nbsp; [**How It Compares →**](#-how-it-compares) &nbsp;·&nbsp; [**Architecture →**](#-architecture)
@@ -68,13 +68,34 @@ It's not an assistant. It's a team that happens to live inside Claude Code.
 |  | JARVIS | Bare Claude Code | Cursor / Copilot | Aider | CrewAI / LangGraph |
 |--|--------|------------------|------------------|-------|--------------------|
 | **Primary use** | Any knowledge work | Coding | IDE coding | Pair-programming | Build-your-own agents |
-| **Specialist roster** | ✅ 63 + 47 ECC engineers | ❌ | ❌ | ❌ | Build yourself |
+| **Specialist roster** | ✅ 63 total, incl. 47 ECC engineers | ❌ | ❌ | ❌ | Build yourself |
 | **Persistent memory** | ✅ 4-layer lazy load | ⚠️ project files | ❌ | ❌ | Build yourself |
 | **Learns from failures** | ✅ MetaClaw | ❌ | ❌ | ❌ | ❌ |
 | **Works out of the box** | ✅ Clone + run | ✅ Clone + run | ✅ | ✅ | ❌ (framework) |
 | **Scope** | Research, content, build, analyze, schedule | Coding tasks | Coding tasks | Coding tasks | Whatever you build |
 
 JARVIS is built **on top of** Claude Code — so you get Claude Code's strengths plus routing, memory, and a pre-loaded specialist team.
+
+---
+
+## 🖥 Control Plane Status
+
+JARVIS is currently a repo-native AI OS: point Claude Code, Cowork, Codex, or another agentic runtime at this folder and it gets the operating instructions, memory layout, agents, skills, hooks, inboxes, and recovery loops.
+
+The next frontier is the visible OS shell:
+
+| Layer | Status |
+|-------|--------|
+| Agent brain | ✅ Strong — orchestrator, agents, ECC sub-team, skills |
+| Memory | ✅ Strong — layered markdown memory plus search fallback |
+| Hooks/recovery | ✅ Functional — precompact and MetaClaw learning loops |
+| Inboxes | ✅ Present — owner/team review surfaces |
+| Command Center UI | 🔜 Planned — mission queue, run outputs, usage, schedules |
+| Channel gateway | 🔜 Planned — Telegram/Slack/Discord/WhatsApp-style entry points |
+| Safe runner bridge | 🔜 Planned — dashboard/channel → headless agent runtime |
+| War Room voice | 🔜 Optional — after queue, runner, and security exist |
+
+See [`docs/control-plane-gap-audit.md`](docs/control-plane-gap-audit.md) for the ClaudeClaw/video-inspired gap audit and build blueprint.
 
 ---
 

@@ -14,14 +14,52 @@ Usage:
 import re
 import sys
 import json
+import math
 import argparse
+from collections import Counter
 from pathlib import Path
 
 try:
     from rank_bm25 import BM25Okapi
 except ImportError:
-    print("ERROR: rank-bm25 not installed. Run: pip3 install rank-bm25 --break-system-packages")
-    sys.exit(1)
+    class BM25Okapi:
+        """Small local BM25 fallback so memory search works without packages."""
+
+        def __init__(self, corpus: list[list[str]], k1: float = 1.5, b: float = 0.75):
+            self.corpus = corpus
+            self.k1 = k1
+            self.b = b
+            self.doc_len = [len(doc) for doc in corpus]
+            self.avgdl = sum(self.doc_len) / len(self.doc_len) if self.doc_len else 0.0
+            self.term_freqs = [Counter(doc) for doc in corpus]
+
+            doc_freqs: Counter[str] = Counter()
+            for doc in corpus:
+                doc_freqs.update(set(doc))
+
+            doc_count = len(corpus)
+            self.idf = {
+                term: math.log(1 + (doc_count - freq + 0.5) / (freq + 0.5))
+                for term, freq in doc_freqs.items()
+            }
+
+        def get_scores(self, query_tokens: list[str]) -> list[float]:
+            if not self.corpus or self.avgdl == 0:
+                return []
+
+            scores: list[float] = []
+            for freqs, doc_len in zip(self.term_freqs, self.doc_len):
+                score = 0.0
+                length_norm = 1 - self.b + self.b * doc_len / self.avgdl
+                for token in query_tokens:
+                    freq = freqs.get(token, 0)
+                    if freq == 0:
+                        continue
+                    numerator = freq * (self.k1 + 1)
+                    denominator = freq + self.k1 * length_norm
+                    score += self.idf.get(token, 0.0) * numerator / denominator
+                scores.append(score)
+            return scores
 
 MEMORY_DIR = Path(__file__).parent
 DEFAULT_INDEX_PATH = MEMORY_DIR / "memory_index.json"

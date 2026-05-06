@@ -41,12 +41,10 @@ def _load_chunks(index_path: Path) -> list[dict]:
         return []
 
 
-# BM25 is imported lazily inside _bm25_fallback so this module works even when
-# rank-bm25 isn't installed (semantic-only mode).
+# BM25 is imported lazily inside _bm25_fallback so this module works even if
+# memory_search.py is unavailable in a stripped-down environment.
 def _bm25_fallback(query: str, top_k: int, index_path: Path) -> list[dict]:
-    # memory_search.py prints to stdout then sys.exit(1)s at module load if
-    # rank-bm25 isn't installed. Suppress its noise so callers see clean output,
-    # and catch SystemExit alongside ImportError so we degrade gracefully.
+    # Keep the import lazy so callers see clean output and degrade gracefully.
     import io
     import contextlib
     try:

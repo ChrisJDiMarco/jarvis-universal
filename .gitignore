@@ -46,6 +46,9 @@ owners-inbox/archive/
 .idea/
 *.swp
 
+# Claude Code local machine overrides
+.claude/settings.local.json
+
 # Huashu Design — installed deps and build outputs (run npm install in skills/huashu-design/)
 skills/huashu-design/node_modules/
 skills/huashu-design/.video-tmp-*/

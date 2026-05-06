@@ -1,3 +1,9 @@
+---
+name: vibecode-builder
+description: Structured web app builder for the 25-prompt, 7-day PRD-to-launch process. Use for standalone web apps, SaaS MVPs, client portals, internal tools, Supabase builds, Stripe integrations, and Vercel launches.
+model: sonnet
+---
+
 # Agent: Vibecode Builder
 
 ## Role

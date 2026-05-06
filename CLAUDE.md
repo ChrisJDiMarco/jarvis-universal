@@ -56,6 +56,7 @@ After first run, the system is fully configured and self-sustaining.
 | Finance | revenue, costs, invoice, budget, MRR, spend, track money | finance |
 | Build (web-only) | build an app, vibe code, scaffold, workflow, automate, integrate, n8n, API | builder → vibecode-app-builder skill |
 | Build (multi-platform) | build web + mobile, mobile app, iOS app, full-stack app, Appifex-style, app studio, multi-platform | app-studio agent |
+| JARVIS Control Plane | command center, control center, mission control, agent OS dashboard, OS interface, channel gateway, mobile bridge, War Room, ClaudeClaw-style | builder → jarvis-control-plane skill |
 | Analysis | audit, analyze [thing], competitive, SEO, market, report on | analyst |
 | Design | landing page, web design, make it look, animated, premium UI, website | web-designer |
 | Design (hi-fi prototype) | hi-fi prototype, clickable demo, iOS/Android prototype, App mockup, interactive demo | web-designer → huashu-design skill |
@@ -211,6 +212,7 @@ When a repeatable pattern emerges (3+ times):
 | heartbeat | "add a heartbeat", "proactive JARVIS", "check in on me", "autonomous check-ins" | Proactive periodic scans — silent if clean, alert if action needed |
 | karpathy-loop | "karpathy loop", "auto-research", "self-optimize", "run experiments overnight", "optimize [metric]" | Auto-research architecture: define metric → run experiments → keep improvements → iterate |
 | agent-infrastructure-audit | "infrastructure audit", "50x gap", "agent friction", "optimize stack for agents" | Identify human-calibrated bottlenecks; prioritized fix list |
+| jarvis-control-plane | "command center", "control center", "mission control", "agent OS dashboard", "OS interface", "War Room", "mobile bridge", "ClaudeClaw-style" | Build the JARVIS OS shell: dashboard, mission queue, channel gateway, safe runner, memory browser, usage ledger, and optional voice/meeting surfaces |
 | memory-management | "remember this", "update memory", session end, new facts | Memory write loop with cap enforcement |
 | morning-briefing | "morning briefing", "come online", "good morning", "what's on today" | Full daily briefing — calendar, priorities, inbox, goals |
 | weekly-review | "weekly review", "end of week", "how's the week looking" | Progress scoreboard + debrief + next-week priorities |
@@ -311,7 +313,7 @@ Key skills available to the builder team:
 │   ├── learned/           ← Auto-generated lessons (MetaClaw)
 │   └── ecc/               ← 181 ECC technical skills (coding, TDD, security, ops)
 ├── .claude/
-│   ├── agents/            ← 65 agents: 18 JARVIS + 47 ECC builder sub-team
+│   ├── agents/            ← 63 agents: 16 JARVIS + 47 ECC builder sub-team
 │   └── rules/             ← ECC guardrails (always-loaded): coding-style, security, git, testing
 ├── hooks/                 ← Hook scripts (precompact_hook.sh)
 ├── data/jarvis.db         ← SQLite database (optional, for queryable data)
@@ -398,7 +400,7 @@ Rules in `.claude/rules/` are automatically loaded by Claude Code and enforced o
 ## Emergency Protocols
 
 - **Context window >50%**: Compress conversation, save key points to memory, clear context
-- **Task requires >5 steps**: Switch to plan mode, propose phases with checkboxes
+- **Task requires >3 steps**: Switch to plan mode, propose phases with checkboxes
 - **Agent fails**: Log failure, attempt with fallback model, report to operator
 - **Memory file approaches cap**: Summarize aggressively, preserve most recent facts (use Haiku for compression)
 

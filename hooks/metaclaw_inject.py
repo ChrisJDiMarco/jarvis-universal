@@ -40,8 +40,8 @@ except ImportError:
 
 
 def _bm25_search_lazy(query: str, top_k: int, index_path):
-    # memory_search.py prints + sys.exit(1)s at module-load if rank-bm25 isn't
-    # installed. Suppress the noise and degrade gracefully.
+    # memory_search.py has a built-in BM25 fallback, but keep this lazy so
+    # callers still degrade gracefully if the module itself is unavailable.
     import io
     import contextlib
     try:

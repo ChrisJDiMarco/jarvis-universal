@@ -1,3 +1,9 @@
+---
+name: app-studio
+description: Multi-platform app builder for web, mobile, and backend monorepos. Use when the user asks for mobile apps, iOS or Android builds, full-stack products, Appifex-style pipelines, or one prompt to create web plus mobile plus API.
+model: sonnet
+---
+
 # Agent: App Studio
 
 ## Role
