@@ -82,7 +82,7 @@ JARVIS is built **on top of** Claude Code — so you get Claude Code's strengths
 
 JARVIS is currently a repo-native AI OS: point Claude Code, Cowork, Codex, or another agentic runtime at this folder and it gets the operating instructions, memory layout, agents, skills, hooks, inboxes, and recovery loops.
 
-The next frontier is the visible OS shell:
+The visible OS shell now exists as a local-first Control Center:
 
 | Layer | Status |
 |-------|--------|
@@ -90,12 +90,12 @@ The next frontier is the visible OS shell:
 | Memory | ✅ Strong — layered markdown memory plus search fallback |
 | Hooks/recovery | ✅ Functional — precompact and MetaClaw learning loops |
 | Inboxes | ✅ Present — owner/team review surfaces |
-| Command Center UI | 🔜 Planned — mission queue, run outputs, usage, schedules |
-| Channel gateway | 🔜 Planned — Telegram/Slack/Discord/WhatsApp-style entry points |
-| Safe runner bridge | 🔜 Planned — dashboard/channel → headless agent runtime |
-| War Room voice | 🔜 Optional — after queue, runner, and security exist |
+| Command Center UI | ✅ Built — simple/advanced views, mission queue, modules, usage |
+| Channel gateway | ✅ Local endpoints — Dashboard, Telegram, Slack, War Room ingress |
+| Safe runner bridge | ✅ Built — SQLite queue → Claude/Codex/local fallback |
+| War Room voice | ⚙️ Shell present — voice adapter still intentionally local-first |
 
-See [`docs/control-plane-gap-audit.md`](docs/control-plane-gap-audit.md) for the ClaudeClaw/video-inspired gap audit and build blueprint.
+Run it with `scripts/start_control_center.sh`, then open `http://127.0.0.1:5174`. See [`docs/control-plane-gap-audit.md`](docs/control-plane-gap-audit.md) for the ClaudeClaw/video-inspired gap audit and build blueprint.
 
 ---
 

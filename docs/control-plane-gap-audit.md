@@ -148,6 +148,8 @@ Optional after calendar/email integrations are confirmed:
 
 ## Definition Of Done
 
+Current implementation lives in `apps/control-center/` and `runtime/control_center/server.py`. The local version now covers the dashboard, SQLite queue, safe Claude/Codex/local runner boundary, channel ingress endpoints, policy toggles, memory search, automation registry, artifacts, settings, and kill switch.
+
 The system becomes an "AI OS" in the visible sense when a user can:
 1. Open a dashboard and see agents, skills, missions, memory, schedules, and recent outputs.
 2. Start a mission from the dashboard without touching the terminal.
