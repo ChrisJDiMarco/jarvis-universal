@@ -78,6 +78,31 @@ JARVIS is built **on top of** Claude Code — so you get Claude Code's strengths
 
 ---
 
+## 🖥 Control Center
+
+JARVIS now includes a local-first Control Center: a premium Simple/Advanced dashboard for non-technical task intake and technical operator visibility.
+
+| Layer | Status |
+|-------|--------|
+| Command Center UI | ✅ Built — simple/advanced views, mission queue, modules, usage |
+| Mission queue | ✅ Built — SQLite missions, runs, events, security decisions |
+| Safe runner bridge | ✅ Built — Claude/Codex/local fallback through a narrow boundary |
+| Channel gateway | ✅ Local endpoints — Dashboard, Telegram, Slack, War Room ingress |
+| Memory/artifacts | ✅ Built — recall search, output artifacts, run logs, usage ledger |
+| Security | ✅ Built — policy toggles, kill switch, output redaction |
+
+Run it locally:
+
+```bash
+scripts/start_control_center.sh
+```
+
+Then open `http://127.0.0.1:5174`.
+
+The source lives in `apps/control-center/` and `runtime/control_center/server.py`.
+
+---
+
 ## 🏗 Architecture
 
 ```mermaid
