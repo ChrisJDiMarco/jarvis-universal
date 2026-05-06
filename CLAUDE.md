@@ -141,6 +141,8 @@ When builder receives a coding or engineering task, delegate to the appropriate 
 | L1 — Critical Facts | `memory/L1-critical-facts.md` | ~1,500 tokens | Always |
 | L2 — Domain Context | `memory/context.md`, `memory/decisions.md`, `memory/learnings.md` | On demand | When topic relevant |
 | L3 — Deep Read | All remaining memory files | Full read | When explicitly needed or recovery mode |
+| L4 — Atomic Wiki | `wiki/[type]_[name].md` | One node at a time | When semantic search returns a wiki hit, or you need a single entity (an agent, skill, project, memory file) without loading the whole canonical file |
+| L5 — Raw Staging | `memory/raw/*.md` | Per-file | When promoting a `raw/` note to canonical memory, or when looking for an idea you captured but haven't filed |
 
 **Default session start = L0 + L1 only (~350 tokens).** Load L2 when the session topic touches projects, decisions, or patterns. Load L3 only when operator asks about history or a precompact flag exists.
 
@@ -173,6 +175,44 @@ If you notice the context window approaching capacity mid-session, **write memor
 | relationships.md | 15,000 | Key contacts and communication styles |
 | ai-intelligence.md | 25,000 | AI news/trend intelligence feed — fast-moving domain |
 | soul.md | 16,000 | Operating philosophy. Evolves slowly — don't rewrite casually |
+
+### Edge Convention (Typed Wikilinks)
+
+> Borrowed from the "Infinite Brain" graph methodology — see comparison notes in this session's outputs.
+
+Standard `[[wikilinks]]` are untyped — the AI sees a link but not the *nature* of the relationship. Type them inline so the semantic-search re-indexer and any future graph-walker can reason about them.
+
+Convention:
+```
+[[<edge-type>::<target>]]
+```
+
+Edge types (10 — match Infinite Brain spec):
+
+| Edge | Meaning | Example |
+|------|---------|---------|
+| `supports` | This argument/decision reinforces the target | `[[supports::no-free-tier]]` |
+| `contradicts` | This argument disagrees with the target | `[[contradicts::team-tier-question]]` |
+| `depends-on` | For this to be true, target must be true | `[[depends-on::stripe-pricing]]` |
+| `derived-from` | This was created based on the target | `[[derived-from::kyle-call-2026-04-14]]` |
+| `related-to` | Loose association, no stronger label fits | `[[related-to::competitive-positioning]]` |
+| `part-of` | This is a sub-component of the target | `[[part-of::infinite-brain-methodology]]` |
+| `preceded-by` | This happens after the target in a sequence | `[[preceded-by::step-2]]` |
+| `followed-by` | This happens before the target in a sequence | `[[followed-by::step-4]]` |
+| `authored` | Who/what created this | `[[authored::claude-opus-4-7]]` |
+| `tagged` | Generic categorization | `[[tagged::pricing]]` |
+
+Untyped `[[wikilinks]]` are still valid (treated as `related-to`). Adopt typing on new entries; don't bulk-rewrite history.
+
+### Raw Staging Workflow
+
+`memory/raw/` is the drop-zone for half-formed material — clippings, mid-conversation thoughts, draft decisions, hypotheses you're testing. See `memory/raw/README.md` for naming and promotion conventions.
+
+**Promote → canonical** when an entry has earned a permanent slot. **Delete** when an entry is wrong, stale, or no longer relevant. Raw is cheap; don't archive what you'd rather forget.
+
+### Wiki Refresh
+
+The `wiki/` snapshot is rebuilt by the `wiki-builder` skill. Last auto-compile timestamp is in `wiki/INDEX.md`. If the timestamp is >30 days old, run `wiki-builder` to refresh — stale wiki entries cause semantic search to return outdated context.
 
 ---
 
@@ -232,6 +272,10 @@ When a repeatable pattern emerges (3+ times):
 | metaclaw-learning | **autonomous** — Stop hook fires on errored sessions (failure mode) and on clean substantive sessions ≥5 tool calls (success mode); orchestrator injects relevant lessons before routing | Extract lessons → semantic-indexed via Ollama embeddings (BM25 fallback) → injected into future agent runs |
 | grade | "/grade", "grade this", "grade the work", independent review | Fresh-session CTO grader — spawns Opus subagent with only the diff + original ask, no memory/chat context. Independent A-F grade + SHIP/FIX-FIRST/KILL verdict. |
 | semantic-code-search | "find where X is implemented", "who references Y", "where do we handle", paraphrased code/concept lookup across projects | Semantic retrieval over the whole JARVIS corpus (code + markdown) via local Ollama embeddings + Milvus. Optional — see `docs/semantic-code-search-setup.md`. |
+| mcp-discovery | "I need a tool for [X]", "do we have an MCP for [Y]", before falling back to Chrome | Composio-style discovery sequence: verify loaded → search registry → introspect → suggest install → execute. Browser is last resort, not default. |
+| mcp-code-exec | MCP server with 20+ tools, agent context bloating from tool schemas, "wrap this connector progressively" | Progressive tool disclosure: replace eager schema load with `discover_tools` / `load_tool` / `execute_tool` wrappers. ~98% token reduction for verbose connectors. |
+| file-delivery | Implicit on every file deliverable from any agent | Specialists own files end-to-end. Return path + 1-3 sentence summary. Never re-paste file contents into chat. |
+| agent-builder | "I need an agent that handles [X]", "build me an agent for [Y]", "hire a new agent" | Phased pipeline: spec → species pick → research (parallel) → PRD (operator-confirmed) → build (parallel) → 5-prompt QA → iterate → index. Replaces thin "tell JARVIS" guidance. |
 
 ### ECC Technical Skills (181 skills in `skills/ecc/` — auto-used by builder sub-agents)
 
@@ -306,8 +350,10 @@ Key skills available to the builder team:
 ├── setup/                 ← First-run wizard and archetype definitions
 ├── .claude/agents/        ← Agent definition files
 ├── memory/                ← Persistent memory (capped .md files)
+│   └── raw/               ← Staging zone for unprocessed ideas/clippings before promotion to canonical files
 ├── owners-inbox/          ← Outputs for operator to review
 ├── team-inbox/            ← Files operator drops for processing
+├── wiki/                  ← Auto-compiled atomic-entity snapshots (one .md per agent/skill/project/memory) — built by wiki-builder skill
 ├── team/roster.md         ← Agent registry
 ├── skills/                ← Reusable skill definitions
 │   ├── learned/           ← Auto-generated lessons (MetaClaw)

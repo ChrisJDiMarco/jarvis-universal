@@ -1,8 +1,14 @@
 # Decisions Memory
 
-> L2 — Loaded on demand. Recent decisions with rationale. Cap: 15,000 chars (recalibrated for Opus 4.7). Prune older decisions when full — older decisions whose rationale no longer informs current work go first.
+> L2 — Loaded on demand. Cap: 15,000 chars (recalibrated for Opus 4.7).
 >
-> JARVIS appends here when you make a non-obvious judgment call and the reasoning matters for future context. Empty on first run.
+> **As of 2026-05-05**: New decisions should be written as atomic files under `memory/decisions/YYYY-MM-DD-slug.md` (Infinite Brain pattern — see `memory/decisions/INDEX.md`). This file remains valid for short decisions (< 5 lines) that don't warrant their own atomic node, and as a fallback when the atomic pattern is overkill. Existing entries below are NOT being migrated — adopt the atomic pattern going forward.
+
+## Atomic decisions (preferred)
+
+→ `memory/decisions/` — one file per decision, individually queryable, with typed edges.
+
+## Inline decisions (fallback for short ones, plus historical entries)
 
 Entry format:
 
@@ -25,4 +31,4 @@ Entry format:
 **Revisit when**: A dashboard MVP can launch or enqueue missions safely from localhost and at least one external channel can create a mission through the same contract.
 
 ## Related
-[[core]]  [[learnings]]  [[context]]
+[[supports::core]]  [[derived-from::learnings]]  [[depends-on::context]]  [[part-of::decisions/INDEX]]

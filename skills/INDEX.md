@@ -26,6 +26,10 @@
 | **Karpathy Loop** | `karpathy-loop.md` | "karpathy loop", "auto-research", "self-optimize", "run experiments overnight", "optimize [metric] automatically" |
 | **Heartbeat Agent** | `heartbeat.md` | "add a heartbeat", "proactive JARVIS", "check in on me", "monitor without being asked", "autonomous check-ins" |
 | **Agent Infrastructure Audit** | `agent-infrastructure-audit.md` | "infrastructure audit", "50x gap", "agent friction", "optimize stack for agents", "agent-native" |
+| **MCP Discovery** | `mcp-discovery.md` | "I need a tool for [X]", "do we have an MCP for [Y]", before falling back to Chrome |
+| **MCP Code Execution Pattern** | `mcp-code-exec.md` | MCP server with 20+ tools, agent context bloating from tool schemas |
+| **File Delivery** | `file-delivery.md` | Implicit on every file deliverable — return path + summary, never paste contents |
+| **Agent Builder** | `agent-builder.md` | "I need an agent that handles [X]", "build me an agent for [Y]", "hire a new agent" |
 | **JARVIS Control Plane** | `jarvis-control-plane.md` | "command center", "control center", "mission control", "agent OS dashboard", "OS interface", "War Room", "mobile bridge", "ClaudeClaw-style" |
 | **Grade** | `grade.md` | "/grade", "grade this", "grade the work", independent CTO review |
 
