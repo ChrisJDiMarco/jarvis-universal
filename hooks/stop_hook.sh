@@ -1,0 +1,137 @@
+#!/bin/bash
+# JARVIS Stop Hook
+# Fires when Claude Code finishes responding (end of a turn/session).
+# Appends a breadcrumb to logs/session-log.jsonl every time.
+# If the session was substantive (>=3 tool calls OR any file writes),
+# also appends a structured entry to logs/daily-activity.md
+# so the activity log reflects real work without the operator having to do it manually.
+#
+# Zero-token: pure bash + jq, no Claude invocations.
+# Input: Claude Code passes a JSON object on stdin:
+#   { "session_id": "...", "transcript_path": "...", "hook_event_name": "Stop", ... }
+
+JARVIS_DIR="$HOME/jarvis"
+LOG_DIR="$JARVIS_DIR/logs"
+SESSION_LOG="$LOG_DIR/session-log.jsonl"
+ACTIVITY_LOG="$LOG_DIR/daily-activity.md"
+
+mkdir -p "$LOG_DIR"
+
+# Read the hook payload from stdin
+PAYLOAD=$(cat)
+
+# Extract key fields (fall back gracefully if jq missing or field absent)
+if command -v jq >/dev/null 2>&1; then
+    SESSION_ID=$(echo "$PAYLOAD" | jq -r '.session_id // "unknown"')
+    TRANSCRIPT=$(echo "$PAYLOAD" | jq -r '.transcript_path // ""')
+else
+    SESSION_ID="unknown"
+    TRANSCRIPT=""
+fi
+
+TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+DATE=$(date '+%Y-%m-%d')
+
+# Parse the transcript if we have one + jq
+TOOL_COUNT=0
+FILE_WRITES=0
+FIRST_USER_MSG=""
+TOOLS_USED=""
+FILES_TOUCHED=""
+
+if [ -n "$TRANSCRIPT" ] && [ -f "$TRANSCRIPT" ] && command -v jq >/dev/null 2>&1; then
+    # Count tool_use entries in the transcript
+    TOOL_COUNT=$(jq -r 'select(.type=="assistant") | .message.content[]? | select(.type=="tool_use") | .name' "$TRANSCRIPT" 2>/dev/null | wc -l | tr -d ' ')
+
+    # File writes = Write or Edit tool calls
+    FILE_WRITES=$(jq -r 'select(.type=="assistant") | .message.content[]? | select(.type=="tool_use" and (.name=="Write" or .name=="Edit" or .name=="NotebookEdit")) | .name' "$TRANSCRIPT" 2>/dev/null | wc -l | tr -d ' ')
+
+    # Unique tool names used
+    TOOLS_USED=$(jq -r 'select(.type=="assistant") | .message.content[]? | select(.type=="tool_use") | .name' "$TRANSCRIPT" 2>/dev/null | sort -u | tr '\n' ',' | sed 's/,$//')
+
+    # First user message (truncated)
+    FIRST_USER_MSG=$(jq -r 'select(.type=="user") | .message.content | if type=="string" then . else (.[]? | select(.type=="text") | .text) end' "$TRANSCRIPT" 2>/dev/null | head -1 | cut -c1-200)
+
+    # Files touched by Write/Edit
+    FILES_TOUCHED=$(jq -r 'select(.type=="assistant") | .message.content[]? | select(.type=="tool_use" and (.name=="Write" or .name=="Edit")) | .input.file_path // empty' "$TRANSCRIPT" 2>/dev/null | sort -u | head -10 | tr '\n' ',' | sed 's/,$//')
+fi
+
+# Always: append a breadcrumb to session-log.jsonl
+BREADCRUMB=$(jq -nc --arg ts "$TIMESTAMP" --arg sid "$SESSION_ID" --arg tools "$TOOLS_USED" --argjson tcount "$TOOL_COUNT" --argjson fwrites "$FILE_WRITES" --arg first "$FIRST_USER_MSG" \
+    '{timestamp: $ts, session_id: $sid, tool_count: $tcount, file_writes: $fwrites, tools: $tools, first_message: $first}' 2>/dev/null)
+
+if [ -n "$BREADCRUMB" ]; then
+    echo "$BREADCRUMB" >> "$SESSION_LOG"
+fi
+
+# Substantive session = at least one file write OR >=3 tool calls
+if [ "$FILE_WRITES" -gt 0 ] || [ "$TOOL_COUNT" -ge 3 ]; then
+    # Build session title from the first user message (first 60 chars)
+    TITLE=$(echo "$FIRST_USER_MSG" | cut -c1-60 | tr -d '\n')
+    [ -z "$TITLE" ] && TITLE="(no user message captured)"
+
+    # Append a structured entry (CLAUDE.md format)
+    {
+        echo ""
+        echo "## $DATE — $TITLE"
+        echo "**What happened**: Session used ${TOOL_COUNT} tool calls, ${FILE_WRITES} file writes. Tools: ${TOOLS_USED:-none}."
+        if [ -n "$FILES_TOUCHED" ]; then
+            echo "**Files touched**: $FILES_TOUCHED"
+        fi
+        echo "**Why it matters**: [fill in manually if significant]"
+        echo "**Share-worthy**: [LOW / MEDIUM / HIGH — fill in manually]"
+    } >> "$ACTIVITY_LOG"
+fi
+
+# ── Memory index: reindex any memory/*.md files touched this session ──────────
+if [ -n "$FILES_TOUCHED" ] && echo "$FILES_TOUCHED" | grep -q "memory/"; then
+    CHANGED_MEMORY_FILES=$(echo "$FILES_TOUCHED" | tr ',' '\n' | grep "memory/.*\.md" | xargs -I{} basename {} | tr '\n' ' ')
+    if [ -n "$CHANGED_MEMORY_FILES" ]; then
+        cd "$JARVIS_DIR" && python3 memory/memory_indexer.py $CHANGED_MEMORY_FILES >> "$LOG_DIR/memory-index.log" 2>&1 &
+    fi
+fi
+
+# ── MetaClaw: auto-extract lessons from this session ────────────────────────
+# Two paths:
+#   - failure mode: any is_error:true tool_result → distill error+recovery lessons
+#   - success mode: substantive clean session (≥5 tool calls, 0 errors) → distill validated patterns
+# Both run in background so we don't block the terminal. Silent on failure — logs to metaclaw.log.
+if [ -n "$TRANSCRIPT" ] && [ -f "$TRANSCRIPT" ] && command -v jq >/dev/null 2>&1 && [ -f "$JARVIS_DIR/hooks/metaclaw_extract.py" ]; then
+    ERROR_SIGNALS=$(jq -r 'select(.type=="user") | .message.content[]? | select(.type=="tool_result" and .is_error==true) | .tool_use_id' "$TRANSCRIPT" 2>/dev/null | wc -l | tr -d ' ')
+    if [ "$ERROR_SIGNALS" -gt 0 ]; then
+        nohup python3 "$JARVIS_DIR/hooks/metaclaw_extract.py" "$TRANSCRIPT" "$SESSION_ID" --mode failure >> "$LOG_DIR/metaclaw.log" 2>&1 &
+    elif [ "$TOOL_COUNT" -ge 5 ]; then
+        # Clean substantive session — extract validated patterns (Haiku will mostly return NO_LESSON which is fine)
+        nohup python3 "$JARVIS_DIR/hooks/metaclaw_extract.py" "$TRANSCRIPT" "$SESSION_ID" --mode success >> "$LOG_DIR/metaclaw.log" 2>&1 &
+    fi
+fi
+
+# ── MetaClaw index: reindex learned/*.md when extraction wrote new lessons ──
+# (The extractor runs in background; we can't know here if it wrote. So we
+# reindex opportunistically whenever any skills/learned/ file was touched.
+# After reindexing, populate embeddings via Ollama for semantic search.)
+if [ -n "$FILES_TOUCHED" ] && echo "$FILES_TOUCHED" | grep -q "skills/learned/"; then
+    cd "$JARVIS_DIR" && (
+        python3 memory/memory_indexer.py \
+            --source-dir "$JARVIS_DIR/skills/learned" \
+            --index-path "$JARVIS_DIR/skills/learned/learned_index.json" \
+            && python3 memory/embed_learned.py \
+            --index-path "$JARVIS_DIR/skills/learned/learned_index.json"
+    ) >> "$LOG_DIR/metaclaw.log" 2>&1 &
+fi
+
+# ── claude-context (Milvus) incremental reindex ───────────────────────────
+# If any indexable source file was touched AND the semantic-search stack is
+# installed AND Milvus is reachable, kick off an incremental reindex in the
+# background. Silent if any of those conditions aren't met — semantic search
+# is opt-in, this hook never blocks or errors when it isn't set up.
+if [ -n "$FILES_TOUCHED" ] && \
+   echo "$FILES_TOUCHED" | grep -qE "skills/|\.claude/agents/|scripts/|hooks/|docs/|memory/|setup/|team/|projects/|CLAUDE\.md|README\.md|AGENTS\.md|INSTALL\.md"; then
+    if [ -f "$JARVIS_DIR/scripts/claude_context_indexer.py" ] && curl -sf http://127.0.0.1:9091/healthz >/dev/null 2>&1; then
+        # FORCE_REINDEX=false → uses Merkle-tree diff, only re-embeds changed files
+        FORCE_REINDEX=false nohup python3 "$JARVIS_DIR/scripts/claude_context_indexer.py" "$JARVIS_DIR" \
+            >> "$LOG_DIR/claude-context-indexer.log" 2>&1 &
+    fi
+fi
+
+exit 0

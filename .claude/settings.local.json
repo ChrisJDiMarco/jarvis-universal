@@ -1,0 +1,25 @@
+{
+  "claude_code_agent_teams": false,
+  "hooks": {
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/jarvis/hooks/precompact_hook.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/jarvis/hooks/stop_hook.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

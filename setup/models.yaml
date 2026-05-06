@@ -1,0 +1,50 @@
+# JARVIS Universal — Model Tier Configuration
+#
+# Single source of truth for which Anthropic model JARVIS uses at each
+# complexity tier. Update this file when new models ship — every other
+# place in JARVIS references the *tier name*, not the version string.
+#
+# Tiers describe USE CASES, not vendor versions. Map them to whichever
+# model you currently prefer.
+
+tiers:
+  strategic:
+    description: |
+      Complex architectural decisions, competitive positioning, first-run
+      setup, multi-step planning, high-stakes calls. Reach for this when
+      the cost of being wrong is high and the cost of thinking longer is low.
+    model: claude-opus-4-7
+    fallback: claude-opus-4-6
+
+  daily:
+    description: |
+      Coding, writing, analysis, code review, most agent work. The 90%-
+      of-sessions tier — fast enough to feel responsive, smart enough to
+      ship production work without hand-holding.
+    model: claude-sonnet-4-6
+    fallback: claude-sonnet-4-5
+
+  bulk:
+    description: |
+      Sub-agent fan-outs, classification, simple lookups, log parsing,
+      summarization, anything where throughput matters more than depth.
+      Cheap and fast.
+    model: claude-haiku-4-5-20251001
+    fallback: claude-haiku-4-5
+
+# Per-agent overrides (optional). Most agents inherit from CLAUDE.md
+# behavior, but you can pin a specific tier here to force a choice.
+# Example:
+#
+# agents:
+#   orchestrator: strategic
+#   researcher:   daily
+#   loop-operator: bulk
+
+# Notes:
+#   - Update this file when Anthropic ships new model versions.
+#   - Memory file caps in CLAUDE.md were calibrated for the strategic-tier
+#     model. If you downgrade strategic to a smaller model, lower the caps
+#     proportionally to keep recall fidelity high.
+#   - Extended thinking budget (MAX_THINKING_TOKENS env) applies to all
+#     tiers but is most useful at strategic.
