@@ -78,6 +78,7 @@ After first run, the system is fully configured and self-sustaining.
 | Plan feature | plan this, break this down, implementation plan | builder → planner agent |
 | Build errors | build fails, compilation error, TypeScript error, can't compile | builder → build-error-resolver agent |
 | Tool setup | "connect [tool]", "set up [MCP]", "help me with MCPs", "I need a tool for [X]", "set up my connectors" | onboarder agent |
+| Front end / UI | start the front end, control center, open the dashboard, start the UI | orchestrator → scripts/start_control_center.sh |
 
 **Archetype-specific contexts** are loaded from `memory/core.md` — once the operator's context is known, routing becomes more precise.
 
@@ -334,6 +335,18 @@ Key skills available to the builder team:
 | Apple Notes | `mcp__Read_and_Write_Apple_Notes__*` | Quick local capture |
 | Semantic code/doc search | `mcp__claude-context__search_code` | Natural-language search over the whole JARVIS corpus. Local Milvus + Ollama. Optional — see `skills/semantic-code-search.md` and `docs/semantic-code-search-setup.md`. |
 
+### Local UI (Control Center)
+The JARVIS control plane has a local web UI at `apps/control-center/`, served by `runtime/control_center/server.py`. When the operator says "start the front end" / "open the control center" / "start the UI", run the start script.
+
+- **Start**: `scripts/start_control_center.sh`
+- **URL**: http://127.0.0.1:5174
+- **Log**: `logs/control-center-server.log`
+- **PID**: `logs/control-center-server.pid` (stop with `kill $(cat logs/control-center-server.pid)`)
+- **Port override**: `JARVIS_CONTROL_CENTER_PORT=<port>` env var
+- **Runner mode**: `JARVIS_RUNNER_MODE=claude|codex|local|auto` (default `auto`)
+
+The script is idempotent — if a server is already running on the recorded PID, it reports the existing URL instead of starting a second instance.
+
 ### Routing Cheat Sheet
 | Task | Right tool | Wrong tool |
 |------|-----------|------------|
@@ -368,6 +381,9 @@ Key skills available to the builder team:
 │   ├── agents/            ← 65 agents: 18 JARVIS + 47 ECC builder sub-team
 │   └── rules/             ← ECC guardrails (always-loaded): coding-style, security, git, testing
 ├── hooks/                 ← Hook scripts (precompact_hook.sh)
+├── apps/control-center/   ← JARVIS Control Center UI (static HTML/CSS/JS frontend)
+├── runtime/control_center/← Control Center backend (Python server on :5174)
+├── scripts/               ← Operational scripts (start_control_center.sh, indexers, cleanup)
 ├── data/jarvis.db         ← SQLite database (optional, for queryable data)
 ├── logs/                  ← Execution and memory logs
 ├── assets/                ← Brand files, templates
@@ -459,6 +475,7 @@ Self-maintenance for the install. None of these run automatically — they're in
 | `setup/install-semantic-search.sh` | Optional, when adding semantic code search | Walks the full Docker + Ollama + Milvus + MCP setup in one go. Idempotent. `--check` reports state without installing. `--yes` skips confirmations. ~10 min, ~1.5 GB disk. |
 | `setup/check.sh` | Anytime — daily ideal | Health check: deps + hook executability + settings.local.json wiring + memory cap status + first-run state. Exit 0 clean / 1 critical / 2 warnings only. Supports `--json` for tooling and `--full-suite` to also run `tests/run-all.sh`. |
 | `tests/run-all.sh` | Before any release, after any structural change | Runs every `tests/test-*.sh`. Verifies bash syntax, no personal info, hooks executable, routing table agents exist, agent files have required sections, memory templates intact, ops scripts referenced from docs all exist, skills declare triggers. Exit 0 clean / 1 any failure. |
+| `scripts/start_control_center.sh` | When opening the JARVIS UI | Starts the local Control Center web server on http://127.0.0.1:5174. Idempotent — re-running with a live PID file reports the existing URL instead of double-starting. PID at `logs/control-center-server.pid`, log at `logs/control-center-server.log`. Override port with `JARVIS_CONTROL_CENTER_PORT`. |
 | `scripts/cleanup-inbox.sh` | Weekly (or scheduled) | Archives `owners-inbox/` files older than 7 days; warns if root inbox exceeds the 20-file cap. `--dry-run` to preview. |
 | `scripts/check-memory-caps.sh` | Before any large memory write, or as a scheduled guard | Reports each `memory/*.md` file vs its cap (defined in `setup/models.yaml`-aligned docs above). Warns at 80%, fails at 100%. |
 | `scripts/dashboard.sh` | When the operator wants a status snapshot | Generates `owners-inbox/dashboard.html` — memory health, recent decisions, learnings, activity log, inbox state. Opens with `open owners-inbox/dashboard.html`. |
