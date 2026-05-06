@@ -1,109 +1,145 @@
 <div align="center">
 
-```
-    ██╗ █████╗ ██████╗ ██╗   ██╗██╗███████╗
-    ██║██╔══██╗██╔══██╗██║   ██║██║██╔════╝
-    ██║███████║██████╔╝██║   ██║██║███████╗
-██   ██║██╔══██║██╔══██╗╚██╗ ██╔╝██║╚════██║
-╚█████╔╝██║  ██║██║  ██║ ╚████╔╝ ██║███████║
- ╚════╝ ╚═╝  ╚═╝╚═╝  ╚═╝  ╚═══╝  ╚═╝╚══════╝
-```
+<h1>JARVIS Universal</h1>
 
-### Universal Agentic Operating System
+<p>
+  <strong>A local-first agentic operating system for Claude Code, Codex, and Cowork.</strong>
+</p>
 
-**Not a chatbot. A team.**
+<p>
+  Specialist agents, persistent memory, self-healing skills, a safe mission queue, and a premium Control Center dashboard.
+</p>
 
-```
-Chat AI                          JARVIS
-──────────────────────────────   ──────────────────────────────────────
-One model, no memory         →   63 specialists + layered memory
-Forgets everything each chat →   Remembers goals, decisions, rules
-Hallucinated stats & facts   →   Claims verified before delivery
-Fails silently               →   Self-healing loops, 5-attempt recovery
-Gets worse at edge cases     →   MetaClaw: every failure becomes a rule
-You manage the process       →   Orchestrator routes, specialists execute
-```
+<p>
+  <a href="#quick-start"><strong>Quick Start</strong></a>
+  ·
+  <a href="#control-center"><strong>Control Center</strong></a>
+  ·
+  <a href="#what-you-get"><strong>What You Get</strong></a>
+  ·
+  <a href="#architecture"><strong>Architecture</strong></a>
+  ·
+  <a href="#connect-your-tools"><strong>Connect Tools</strong></a>
+</p>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Built with Claude](https://img.shields.io/badge/Built%20with-Claude%20Code-blueviolet)](https://claude.com/product/claude-code)
-[![Agents](https://img.shields.io/badge/Agents-63-blue)](/.claude/agents)
-[![Skills](https://img.shields.io/badge/Skills-290%2B-green)](./skills)
-[![Status](https://img.shields.io/badge/Status-Production-success)](./)
+[![License: MIT](https://img.shields.io/badge/License-MIT-111827.svg)](https://opensource.org/licenses/MIT)
+[![Built with Claude Code](https://img.shields.io/badge/Built%20with-Claude%20Code-5b21b6.svg)](https://claude.com/product/claude-code)
+[![Runtime](https://img.shields.io/badge/Runtime-Claude%20%7C%20Codex%20%7C%20Local-0f766e.svg)](./runtime/control_center)
+[![Agents](https://img.shields.io/badge/Agents-63-2563eb.svg)](/.claude/agents)
+[![Skills](https://img.shields.io/badge/Skills-290%2B-0f766e.svg)](./skills)
+[![Status](https://img.shields.io/badge/Status-Local%20AI%20OS-111827.svg)](./)
 
-[**Quick Start →**](#-setup) &nbsp;·&nbsp; [**What It Does →**](#-what-jarvis-does) &nbsp;·&nbsp; [**How It Compares →**](#-how-it-compares) &nbsp;·&nbsp; [**Architecture →**](#-architecture)
+<br />
+
+<img src="assets/readme/control-center-preview.svg" alt="JARVIS Universal Control Center preview" width="100%" />
 
 </div>
 
 ---
 
-## Why This Exists
+## The Idea
 
-Every AI tool puts you in the orchestrator seat — you decide which model, what context to paste, what to carry across sessions, when to switch tools. For a system that's supposed to be working _for_ you, that's a lot of operator work.
+Most AI tools make you the project manager. You choose the model, paste the context, remember what happened last time, decide which tool to use, and recover when the agent wanders.
 
-JARVIS flips it. You say what you want in plain language. An orchestrator routes the request to the right specialist. The specialists have their own tools, their own memory, and their own rules. The system extracts a lesson from every failure and never makes the same mistake twice.
+JARVIS flips that. You give one plain-language request. The orchestrator routes it to specialist agents, pulls the right memory, applies the right skill, records what happened, and learns from the result.
 
-It's not an assistant. It's a team that happens to live inside Claude Code.
-
----
-
-## ⚡ What JARVIS Does
-
-| You say... | JARVIS does... |
-|-----------|----------------|
-| `"Research [topic]"` | 6-phase pipeline: scope → search → screen → extract → synthesize → deliver with citations |
-| `"Write a post about [X]"` | Drafts in your voice for any platform, claims fact-checked before delivery |
-| `"Build an app that does [X]"` | 25-prompt, 7-day build: PRD → stack → auth → backend → payments → launch |
-| `"Automate [workflow]"` | Designs + deploys n8n/Zapier workflows with self-healing error handling |
-| `"Morning briefing"` | Calendar, priorities, inbox summary, project status — in under 60 seconds |
-| `"Analyze my competitors"` | Validated competitive briefs — no hallucinated pricing or fake data |
-| `"Monitor [condition] and alert me"` | Watches continuously, sends proactive iMessage/Slack/email alerts |
-| `"Build a landing page for [X]"` | 2026-tier animated HTML — depth, motion, conversion-optimized |
-| `"Prep me for my meeting with [name]"` | Pulls context, drafts talking points, formats agenda |
-| `"Review this code"` | Multi-specialist review: quality + security + language-specific patterns |
+It is not a chatbot. It is a small operating system for agentic work.
 
 ---
 
-## 🥊 How It Compares
+## Quick Start
 
-|  | JARVIS | Bare Claude Code | Cursor / Copilot | Aider | CrewAI / LangGraph |
-|--|--------|------------------|------------------|-------|--------------------|
-| **Primary use** | Any knowledge work | Coding | IDE coding | Pair-programming | Build-your-own agents |
-| **Specialist roster** | ✅ 63 + 47 ECC engineers | ❌ | ❌ | ❌ | Build yourself |
-| **Persistent memory** | ✅ 4-layer lazy load | ⚠️ project files | ❌ | ❌ | Build yourself |
-| **Learns from failures** | ✅ MetaClaw | ❌ | ❌ | ❌ | ❌ |
-| **Works out of the box** | ✅ Clone + run | ✅ Clone + run | ✅ | ✅ | ❌ (framework) |
-| **Scope** | Research, content, build, analyze, schedule | Coding tasks | Coding tasks | Coding tasks | Whatever you build |
+```bash
+git clone https://github.com/ChrisJDiMarco/jarvis-universal.git ~/jarvis
+cd ~/jarvis
+bash setup/install.sh
+claude
+```
 
-JARVIS is built **on top of** Claude Code — so you get Claude Code's strengths plus routing, memory, and a pre-loaded specialist team.
-
----
-
-## 🖥 Control Center
-
-JARVIS now includes a local-first Control Center: a premium Simple/Advanced dashboard for non-technical task intake and technical operator visibility.
-
-| Layer | Status |
-|-------|--------|
-| Command Center UI | ✅ Built — simple/advanced views, mission queue, modules, usage |
-| Mission queue | ✅ Built — SQLite missions, runs, events, security decisions |
-| Safe runner bridge | ✅ Built — Claude/Codex/local fallback through a narrow boundary |
-| Channel gateway | ✅ Local endpoints — Dashboard, Telegram, Slack, War Room ingress |
-| Memory/artifacts | ✅ Built — recall search, output artifacts, run logs, usage ledger |
-| Security | ✅ Built — policy toggles, kill switch, output redaction |
-
-Run it locally:
+Launch the visual Control Center:
 
 ```bash
 scripts/start_control_center.sh
 ```
 
-Then open `http://127.0.0.1:5174`.
-
-The source lives in `apps/control-center/` and `runtime/control_center/server.py`.
+Open `http://127.0.0.1:5174`.
 
 ---
 
-## 🏗 Architecture
+## Control Center
+
+The Control Center is the non-terminal front door for JARVIS. It gives everyday users a simple task launcher and gives technical operators the full mission-control surface.
+
+<table>
+  <tr>
+    <td width="50%"><strong>Simple Mode</strong><br /><sub>Consumer-friendly prompt box, quick task starters, active work, and latest output.</sub></td>
+    <td width="50%"><strong>Advanced Mode</strong><br /><sub>Mission queue, launcher, runner pipeline, agent mesh, audit feed, policy bar, channels, memory, artifacts, and settings.</sub></td>
+  </tr>
+  <tr>
+    <td><strong>SQLite Mission Queue</strong><br /><sub>Missions, runs, events, usage ledger, security decisions, artifacts, and automation registry.</sub></td>
+    <td><strong>Safe Runner Boundary</strong><br /><sub>Dashboard tasks run through Claude, Codex, or a local fallback without exposing raw shell freedom to the UI.</sub></td>
+  </tr>
+  <tr>
+    <td><strong>Channel Gateway</strong><br /><sub>Local endpoints for Dashboard, Telegram, Slack, and War Room ingress.</sub></td>
+    <td><strong>Security Controls</strong><br /><sub>Allowlist posture, PIN gate, exfiltration guard, kill switch, redaction, and audit log.</sub></td>
+  </tr>
+</table>
+
+Source:
+
+```text
+apps/control-center/
+runtime/control_center/server.py
+scripts/start_control_center.sh
+```
+
+---
+
+## What You Get
+
+<table>
+  <tr>
+    <td width="33%"><strong>Agent Team</strong><br /><sub>63 project agents plus a 47-agent ECC engineering sub-team.</sub></td>
+    <td width="33%"><strong>Persistent Memory</strong><br /><sub>Layered markdown memory with search, recovery, decisions, and learnings.</sub></td>
+    <td width="33%"><strong>Skill Library</strong><br /><sub>290+ reusable playbooks for research, building, content, automation, and ops.</sub></td>
+  </tr>
+  <tr>
+    <td><strong>Self-Healing Workflows</strong><br /><sub>Build, test, diagnose, repair, and retry loops before escalating.</sub></td>
+    <td><strong>MetaClaw Learning</strong><br /><sub>Failures and validated successes become reusable rules for future sessions.</sub></td>
+    <td><strong>Tool Routing</strong><br /><sub>Direct MCP first, automation second, browser fallback, manual only when needed.</sub></td>
+  </tr>
+</table>
+
+---
+
+## What You Can Ask
+
+| Request | What JARVIS Does |
+|---------|------------------|
+| `"Research this market"` | Runs a sourced research pipeline with confidence and citations |
+| `"Write a post about this idea"` | Drafts platform-ready content and verifies claims |
+| `"Build an app that does this"` | Turns a prompt into PRD, stack, schema, UI, backend, test, and launch path |
+| `"Automate this workflow"` | Designs a workflow and routes to n8n, APIs, scripts, or local execution |
+| `"Morning briefing"` | Pulls calendar, priorities, inbox items, blockers, and active project status |
+| `"Review this code"` | Runs multi-specialist code review, security review, and test guidance |
+| `"Monitor this and alert me"` | Creates persistent monitoring patterns and proactive follow-up loops |
+
+---
+
+## Why It Beats A Bare Agent
+
+| Capability | Bare Chat / IDE Agent | JARVIS Universal |
+|------------|------------------------|------------------|
+| Routing | You choose what to ask and where | Orchestrator routes to the right specialist |
+| Memory | Mostly session-bound | Layered memory, decisions, learnings, recovery |
+| UI | Chat or terminal | Premium local Control Center plus terminal runtime |
+| Execution | Ad hoc | SQLite mission queue and safe runner boundary |
+| Quality | Depends on prompt quality | Skills, guardrails, reviews, and self-healing loops |
+| Learning | Starts over often | MetaClaw extracts rules from failures and wins |
+
+---
+
+## Architecture
 
 ```mermaid
 graph TD
@@ -234,7 +270,7 @@ JARVIS asks 3 questions on first run and configures itself for your archetype. N
 
 ---
 
-## 🚀 Setup
+## Setup
 
 ### Prerequisites
 - [Claude Code](https://claude.com/product/claude-code) — requires Claude Pro or API key
@@ -264,7 +300,7 @@ After about two minutes, JARVIS has populated memory, activated the right agents
 
 ### Try These First
 
-Six prompts that exercise the full system. Type one and watch the orchestrator route it.
+Six prompts that exercise the full system. Type one in Claude Code, or start the Control Center and queue it from the dashboard.
 
 ```
 "morning briefing"
@@ -276,6 +312,8 @@ Six prompts that exercise the full system. Type one and watch the orchestrator r
 ```
 
 Once a few sessions are in, run `bash scripts/dashboard.sh` and open `owners-inbox/dashboard.html` for a status snapshot.
+
+For the new local OS surface, run `scripts/start_control_center.sh` and open `http://127.0.0.1:5174`.
 
 ### Versioning, updating, recovery
 
@@ -298,7 +336,7 @@ Once installed, the Stop hook auto-triggers incremental reindex when source file
 
 ---
 
-## 🔌 Connect Your Tools
+## Connect Your Tools
 
 JARVIS works without external connections, but it really comes alive when it can read your inbox, query your calendar, search the web, and message your team. The first-run wizard offers to walk you through this — or you can ask later by saying `"connect [tool]"` or `"set up my MCPs"`. The `onboarder` agent handles the flow.
 
@@ -377,6 +415,7 @@ Full per-tool install steps live in [`setup/connect-tools.md`](setup/connect-too
 │   ├── researcher-deep.md       6-phase research pipeline
 │   ├── vibecode-app-builder.md  25-prompt app build process
 │   ├── elite-web-ui/            2026-tier web design system
+│   ├── jarvis-control-plane.md  Control Center + mission queue playbook
 │   ├── competitive-intel.md     Validated competitor research
 │   ├── karpathy-loop.md         Auto-research architecture
 │   ├── heartbeat.md             Proactive periodic scans
@@ -387,6 +426,10 @@ Full per-tool install steps live in [`setup/connect-tools.md`](setup/connect-too
 ├── ⚙️  setup/
 │   ├── archetypes.md            8 operator archetypes + routing
 │   └── first-run.md             Setup wizard instructions
+│
+├── 🖥 apps/control-center/     ← Premium local JARVIS dashboard
+├── 🧩 runtime/control_center/  ← SQLite API + safe Claude/Codex runner
+├── ▶️  scripts/start_control_center.sh
 │
 ├── 📥 owners-inbox/           ← Every output JARVIS produces for you
 ├── 📤 team-inbox/             ← Drop files here for JARVIS to process

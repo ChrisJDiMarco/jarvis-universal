@@ -37,3 +37,8 @@
 **What happened**: Rebuilt the Control Center visual system into a minimalist modern SaaS interface with dark precision navigation, light operator workspace, restrained teal/blue accents, cleaner cards, and stronger hierarchy.
 **Why it matters**: The same working JARVIS backend now feels like a polished product instead of an internal prototype.
 **Share-worthy**: HIGH — visual before/after demo for making an agent OS feel premium and usable.
+
+## 2026-05-06 — GitHub README Product Refresh
+**What happened**: Redesigned the GitHub README into a product-style front page with a Control Center preview asset, sharper positioning, quick start, feature cards, and updated runtime/file-structure references.
+**Why it matters**: The public repo now communicates JARVIS Universal as a real local AI OS, not just a collection of agent files.
+**Share-worthy**: HIGH — strong launch-page angle for the main GitHub repo.

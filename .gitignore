@@ -38,6 +38,7 @@ node_modules/
 __pycache__/
 *.pyc
 .venv/
+.claude/worktrees/
 
 # Archives
 owners-inbox/archive/

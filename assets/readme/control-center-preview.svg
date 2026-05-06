@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">JARVIS Universal Control Center preview</title>
+  <desc id="desc">A premium local AI OS dashboard with mission queue, agent mesh, memory, channels, and security controls.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#f8fafc"/>
+      <stop offset="1" stop-color="#eef2f7"/>
+    </linearGradient>
+    <linearGradient id="sidebar" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#121417"/>
+      <stop offset="1" stop-color="#0b0d0f"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#101828" flood-opacity="0.14"/>
+    </filter>
+    <pattern id="grid" width="36" height="36" patternUnits="userSpaceOnUse">
+      <path d="M36 0H0V36" fill="none" stroke="#101828" stroke-opacity=".055"/>
+    </pattern>
+  </defs>
+
+  <rect width="1280" height="720" rx="30" fill="url(#bg)"/>
+  <rect width="1280" height="720" rx="30" fill="url(#grid)"/>
+
+  <g filter="url(#shadow)">
+    <rect x="54" y="54" width="1172" height="612" rx="24" fill="#ffffff"/>
+  </g>
+
+  <rect x="54" y="54" width="232" height="612" rx="24" fill="url(#sidebar)"/>
+  <path d="M262 54h24v612h-24z" fill="#0b0d0f"/>
+
+  <rect x="82" y="86" width="42" height="42" rx="10" fill="#d9fff5"/>
+  <text x="103" y="114" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" fill="#08110f">J</text>
+  <text x="140" y="101" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="800" fill="#f8fafc">JARVIS</text>
+  <text x="140" y="121" font-family="Inter, Arial, sans-serif" font-size="12" fill="#98a2b3">Universal OS</text>
+
+  <g font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700">
+    <rect x="78" y="164" width="184" height="38" rx="8" fill="#23272c"/>
+    <text x="108" y="188" fill="#ffffff">Mission Control</text>
+    <text x="108" y="230" fill="#9aa4b2">Agents</text>
+    <text x="108" y="270" fill="#9aa4b2">Setup</text>
+    <text x="108" y="310" fill="#9aa4b2">Memory</text>
+    <text x="108" y="350" fill="#9aa4b2">Channels</text>
+    <text x="108" y="390" fill="#9aa4b2">Security</text>
+    <text x="108" y="430" fill="#9aa4b2">Automations</text>
+    <text x="108" y="470" fill="#9aa4b2">Artifacts</text>
+    <text x="108" y="510" fill="#9aa4b2">Settings</text>
+  </g>
+
+  <rect x="78" y="574" width="184" height="58" rx="10" fill="#202327" stroke="#30363d"/>
+  <circle cx="98" cy="603" r="5" fill="#12b76a"/>
+  <text x="112" y="599" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" fill="#f8fafc">claude runner</text>
+  <text x="112" y="617" font-family="Inter, Arial, sans-serif" font-size="11" fill="#98a2b3">SQLite queue online</text>
+
+  <text x="326" y="108" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="800" fill="#667085">COMMAND CENTER</text>
+  <text x="326" y="139" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="850" fill="#111827">JARVIS Mission Control</text>
+  <rect x="850" y="92" width="126" height="38" rx="9" fill="#eef2f7" stroke="#e4e7ec"/>
+  <rect x="914" y="96" width="58" height="30" rx="7" fill="#ffffff"/>
+  <text x="866" y="116" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" fill="#667085">Simple</text>
+  <text x="929" y="116" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" fill="#111827">Advanced</text>
+  <rect x="992" y="92" width="102" height="38" rx="9" fill="#111827"/>
+  <text x="1022" y="116" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="850" fill="#ffffff">Run next</text>
+  <rect x="1108" y="92" width="90" height="38" rx="9" fill="#fff4f2" stroke="#ffd5d0"/>
+  <text x="1125" y="116" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="850" fill="#b42318">Pause</text>
+
+  <g font-family="Inter, Arial, sans-serif">
+    <rect x="326" y="174" width="186" height="82" rx="12" fill="#ffffff" stroke="#e4e7ec"/>
+    <text x="342" y="205" font-size="13" fill="#667085">Queued</text>
+    <text x="342" y="231" font-size="30" font-weight="850" fill="#111827">4</text>
+    <text x="342" y="248" font-size="12" fill="#667085">mission backlog</text>
+
+    <rect x="528" y="174" width="186" height="82" rx="12" fill="#ffffff" stroke="#e4e7ec"/>
+    <text x="544" y="205" font-size="13" fill="#667085">Running</text>
+    <text x="544" y="231" font-size="30" font-weight="850" fill="#111827">0</text>
+    <text x="544" y="248" font-size="12" fill="#667085">active runner slots</text>
+
+    <rect x="730" y="174" width="186" height="82" rx="12" fill="#ffffff" stroke="#e4e7ec"/>
+    <text x="746" y="205" font-size="13" fill="#667085">Cost today</text>
+    <text x="746" y="231" font-size="30" font-weight="850" fill="#111827">$0.50</text>
+    <text x="746" y="248" font-size="12" fill="#667085">preview ledger</text>
+
+    <rect x="932" y="174" width="186" height="82" rx="12" fill="#ffffff" stroke="#e4e7ec"/>
+    <text x="948" y="205" font-size="13" fill="#667085">Risk posture</text>
+    <text x="948" y="231" font-size="30" font-weight="850" fill="#111827">Armed</text>
+    <text x="948" y="248" font-size="12" fill="#667085">kill switch ready</text>
+  </g>
+
+  <rect x="326" y="284" width="518" height="314" rx="14" fill="#ffffff" stroke="#e4e7ec"/>
+  <text x="350" y="322" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="800" fill="#667085">QUEUE</text>
+  <text x="350" y="348" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="850" fill="#111827">Missions</text>
+
+  <g font-family="Inter, Arial, sans-serif">
+    <rect x="350" y="374" width="470" height="58" rx="10" fill="#ffffff" stroke="#d9e2f0"/>
+    <rect x="350" y="386" width="3" height="34" fill="#2563eb"/>
+    <text x="368" y="398" font-size="15" font-weight="850" fill="#111827">Draft a clear post in my voice about this idea.</text>
+    <text x="368" y="418" font-size="12" fill="#667085">content-creator · Dashboard · Queued</text>
+    <rect x="738" y="388" width="62" height="24" rx="12" fill="#eff6ff" stroke="#bfd7ff"/>
+    <text x="752" y="405" font-size="11" font-weight="850" fill="#175cd3">Queued</text>
+
+    <rect x="350" y="446" width="470" height="58" rx="10" fill="#ffffff" stroke="#d9e2f0"/>
+    <rect x="350" y="458" width="3" height="34" fill="#2563eb"/>
+    <text x="368" y="470" font-size="15" font-weight="850" fill="#111827">JARVIS onboarding checklist for a new user</text>
+    <text x="368" y="490" font-size="12" fill="#667085">orchestrator · Telegram · Queued</text>
+    <rect x="738" y="460" width="62" height="24" rx="12" fill="#eff6ff" stroke="#bfd7ff"/>
+    <text x="752" y="477" font-size="11" font-weight="850" fill="#175cd3">Queued</text>
+
+    <rect x="350" y="518" width="470" height="58" rx="10" fill="#ffffff" stroke="#d9e2f0"/>
+    <rect x="350" y="530" width="3" height="34" fill="#f79009"/>
+    <text x="368" y="542" font-size="15" font-weight="850" fill="#111827">Safe runner contract</text>
+    <text x="368" y="562" font-size="12" fill="#667085">builder · Claude runtime · Done</text>
+    <rect x="752" y="532" width="48" height="24" rx="12" fill="#ecfdf3" stroke="#abefc6"/>
+    <text x="765" y="549" font-size="11" font-weight="850" fill="#027a48">Done</text>
+  </g>
+
+  <rect x="868" y="284" width="250" height="314" rx="14" fill="#ffffff" stroke="#e4e7ec"/>
+  <text x="892" y="322" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="800" fill="#667085">LAUNCHER</text>
+  <text x="892" y="348" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="850" fill="#111827">New Mission</text>
+  <rect x="892" y="374" width="202" height="42" rx="9" fill="#f8fafc" stroke="#e4e7ec"/>
+  <text x="908" y="400" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" fill="#111827">orchestrator</text>
+  <rect x="892" y="430" width="202" height="88" rx="9" fill="#f8fafc" stroke="#e4e7ec"/>
+  <text x="908" y="456" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" fill="#111827">Build the next mission...</text>
+  <rect x="892" y="538" width="202" height="38" rx="9" fill="#111827"/>
+  <text x="946" y="563" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="850" fill="#ffffff">Enqueue mission</text>
+
+  <rect x="1140" y="284" width="58" height="314" rx="14" fill="#171a1d"/>
+  <circle cx="1169" cy="350" r="18" fill="#d9fff5"/>
+  <rect x="1154" y="410" width="30" height="4" rx="2" fill="#98a2b3"/>
+  <rect x="1154" y="430" width="30" height="4" rx="2" fill="#98a2b3"/>
+  <rect x="1154" y="450" width="30" height="4" rx="2" fill="#98a2b3"/>
+</svg>
