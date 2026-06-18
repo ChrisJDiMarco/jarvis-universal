@@ -1,0 +1,77 @@
+<svg width="1280" height="360" viewBox="0 0 1280 360" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="JARVIS — Universal Agentic Operating System">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1280" y2="360" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0a0a12"/>
+      <stop offset="0.55" stop-color="#120f26"/>
+      <stop offset="1" stop-color="#0c0a1a"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.72" cy="0.42" r="0.6">
+      <stop offset="0" stop-color="#6d28d9" stop-opacity="0.55"/>
+      <stop offset="0.45" stop-color="#4338ca" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#4338ca" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="word" x1="70" y1="120" x2="640" y2="210" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.55" stop-color="#c7d2fe"/>
+      <stop offset="1" stop-color="#a78bfa"/>
+    </linearGradient>
+    <linearGradient id="rule" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#818cf8"/>
+      <stop offset="0.5" stop-color="#c084fc"/>
+      <stop offset="1" stop-color="#5eead4"/>
+    </linearGradient>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="6"/>
+    </filter>
+  </defs>
+
+  <!-- backdrop -->
+  <rect width="1280" height="360" rx="22" fill="url(#bg)"/>
+  <rect width="1280" height="360" rx="22" fill="url(#glow)"/>
+
+  <!-- faint dot texture -->
+  <g fill="#ffffff" opacity="0.05">
+    <circle cx="120" cy="300" r="1.4"/><circle cx="200" cy="60" r="1.2"/><circle cx="320" cy="250" r="1.2"/>
+    <circle cx="500" cy="40" r="1.2"/><circle cx="700" cy="320" r="1.4"/><circle cx="1180" cy="70" r="1.2"/>
+    <circle cx="1230" cy="300" r="1.4"/><circle cx="60" cy="180" r="1.2"/>
+  </g>
+
+  <!-- agent constellation (orchestrator + specialists) -->
+  <g opacity="0.9">
+    <g stroke="#6366f1" stroke-opacity="0.28" stroke-width="1.4">
+      <line x1="985" y1="180" x2="868" y2="104"/>
+      <line x1="985" y1="180" x2="1108" y2="116"/>
+      <line x1="985" y1="180" x2="828" y2="214"/>
+      <line x1="985" y1="180" x2="1126" y2="238"/>
+      <line x1="985" y1="180" x2="966" y2="74"/>
+      <line x1="985" y1="180" x2="992" y2="300"/>
+      <line x1="985" y1="180" x2="1188" y2="176"/>
+      <line x1="985" y1="180" x2="792" y2="150"/>
+    </g>
+    <!-- hub glow -->
+    <circle cx="985" cy="180" r="30" fill="#7c3aed" opacity="0.30" filter="url(#soft)"/>
+    <!-- satellites -->
+    <g>
+      <circle cx="868" cy="104" r="6" fill="#818cf8"/>
+      <circle cx="1108" cy="116" r="7" fill="#c084fc"/>
+      <circle cx="828" cy="214" r="5.5" fill="#5eead4"/>
+      <circle cx="1126" cy="238" r="6.5" fill="#60a5fa"/>
+      <circle cx="966" cy="74" r="5" fill="#f472b6"/>
+      <circle cx="992" cy="300" r="6" fill="#34d399"/>
+      <circle cx="1188" cy="176" r="6.5" fill="#fbbf24"/>
+      <circle cx="792" cy="150" r="5.5" fill="#a78bfa"/>
+    </g>
+    <!-- hub -->
+    <circle cx="985" cy="180" r="15" fill="#0b0a16" stroke="#a78bfa" stroke-width="2.5"/>
+    <circle cx="985" cy="180" r="6" fill="#c4b5fd"/>
+  </g>
+
+  <!-- wordmark + copy -->
+  <g font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+    <text x="68" y="178" font-size="104" font-weight="800" letter-spacing="6" fill="url(#word)">JARVIS</text>
+    <rect x="72" y="206" width="430" height="3" rx="1.5" fill="url(#rule)"/>
+    <text x="72" y="246" font-size="22" font-weight="700" letter-spacing="7" fill="#a5b4fc">UNIVERSAL AGENTIC OPERATING SYSTEM</text>
+    <text x="72" y="288" font-size="22" font-weight="500" fill="#cbd5e1">Not a chatbot. A team. Point Claude Code at one folder and it becomes your personal OS.</text>
+    <text x="72" y="324" font-size="16" font-weight="600" letter-spacing="0.5" fill="#7c83a3" font-family="ui-monospace, 'SF Mono', Menlo, monospace">73 agents · 246 skills · layered memory · learns from failure · self-maintaining</text>
+  </g>
+</svg>

@@ -1,17 +1,6 @@
 <div align="center">
 
-```
-    ██╗ █████╗ ██████╗ ██╗   ██╗██╗███████╗
-    ██║██╔══██╗██╔══██╗██║   ██║██║██╔════╝
-    ██║███████║██████╔╝██║   ██║██║███████╗
-██   ██║██╔══██║██╔══██╗╚██╗ ██╔╝██║╚════██║
-╚█████╔╝██║  ██║██║  ██║ ╚████╔╝ ██║███████║
- ╚════╝ ╚═╝  ╚═╝╚═╝  ╚═╝  ╚═══╝  ╚═╝╚══════╝
-```
-
-### Universal Agentic Operating System
-
-**Not a chatbot. A team.**
+<img src="assets/jarvis-banner.png" alt="JARVIS — Universal Agentic Operating System" width="100%">
 
 ```
 Chat AI                          JARVIS
