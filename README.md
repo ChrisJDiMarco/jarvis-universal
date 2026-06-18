@@ -31,7 +31,7 @@
 
 <br />
 
-<img src="assets/readme/jarvis-os-showcase.svg" alt="JARVIS OS minds dashboard" width="100%" />
+<img src="assets/readme/jarvis-os-screenshot.png" alt="JARVIS OS — the desktop command center for multiple AI minds" width="100%" />
 
 </div>
 
