@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>JARVIS Control Center</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell" data-paused="false" data-view="simple">
+      <aside class="sidebar" aria-label="Primary navigation">
+        <div class="brand">
+          <div class="brand-mark">J</div>
+          <div>
+            <strong>JARVIS</strong>
+            <span>Universal OS</span>
+          </div>
+        </div>
+
+        <nav class="nav-list" aria-label="Sections">
+          <a class="active" href="#mission-control" data-module-link="mission-control">
+            <span data-icon="dashboard"></span>
+            Mission Control
+          </a>
+          <a href="#agents" data-module-link="agents">
+            <span data-icon="agents"></span>
+            Agents
+          </a>
+          <a href="#setup" data-module-link="setup">
+            <span data-icon="spark"></span>
+            Setup
+          </a>
+          <a href="#memory" data-module-link="memory">
+            <span data-icon="memory"></span>
+            Memory
+          </a>
+          <a href="#channels" data-module-link="channels">
+            <span data-icon="channels"></span>
+            Channels
+          </a>
+          <a href="#security" data-module-link="security">
+            <span data-icon="shield"></span>
+            Security
+          </a>
+          <a href="#automations" data-module-link="automations">
+            <span data-icon="clock"></span>
+            Automations
+          </a>
+          <a href="#artifacts" data-module-link="artifacts">
+            <span data-icon="file"></span>
+            Artifacts
+          </a>
+          <a href="#settings" data-module-link="settings">
+            <span data-icon="settings"></span>
+            Settings
+          </a>
+        </nav>
+
+        <div class="skill-pack">
+          <p class="eyebrow">Skill Packs</p>
+          <button type="button" data-pack="Research">Research</button>
+          <button type="button" data-pack="Builder">Builder</button>
+          <button type="button" data-pack="Content">Content</button>
+          <button type="button" data-pack="Ops">Ops</button>
+        </div>
+
+        <div class="system-card">
+          <div class="status-line">
+            <span class="status-dot"></span>
+            <strong id="runtimeMode">Local preview</strong>
+          </div>
+          <span id="runnerStatus">Runner boundary staged</span>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Command center</p>
+            <h1 id="moduleTitle">JARVIS Mission Control</h1>
+          </div>
+          <div class="topbar-actions">
+            <div class="mode-toggle" aria-label="View mode">
+              <button class="active" type="button" data-view-mode="simple">Simple</button>
+              <button type="button" data-view-mode="advanced">Advanced</button>
+            </div>
+            <button class="icon-button" type="button" id="commandButton" aria-label="Open command palette" title="Command palette">
+              <span data-icon="command"></span>
+            </button>
+            <button class="primary-button compact" type="button" id="runButton">
+              <span data-icon="play"></span>
+              Run next
+            </button>
+            <button class="danger-button" type="button" id="pauseButton">
+              <span data-icon="pause"></span>
+              <span>Pause inbound</span>
+            </button>
+          </div>
+        </header>
+
+        <section class="simple-view" id="simple-view">
+          <section class="simple-hero">
+            <div>
+              <p class="eyebrow">Simple view</p>
+              <h2>What should JARVIS handle?</h2>
+            </div>
+            <form class="simple-prompt" id="simpleForm">
+              <input
+                id="simplePrompt"
+                name="prompt"
+                type="text"
+                value="Research my market and give me the next best move"
+                aria-label="Task for JARVIS"
+              />
+              <button class="primary-button" type="submit">
+                <span data-icon="plus"></span>
+                Start
+              </button>
+            </form>
+          </section>
+
+          <section class="quick-grid" aria-label="Common task starters">
+            <button type="button" data-quick-task="research">
+              <strong>Research something</strong>
+              <span>Market, competitor, product, evidence</span>
+            </button>
+            <button type="button" data-quick-task="write">
+              <strong>Write content</strong>
+              <span>Post, email, newsletter, article</span>
+            </button>
+            <button type="button" data-quick-task="build">
+              <strong>Build or fix</strong>
+              <span>App, workflow, bug, automation</span>
+            </button>
+            <button type="button" data-quick-task="organize">
+              <strong>Organize my day</strong>
+              <span>Briefing, calendar, priorities</span>
+            </button>
+            <button type="button" data-quick-task="analyze">
+              <strong>Analyze a business</strong>
+              <span>SEO, market, finance, strategy</span>
+            </button>
+            <button type="button" data-quick-task="monitor">
+              <strong>Watch something</strong>
+              <span>Alerts, follow-ups, recurring checks</span>
+            </button>
+          </section>
+
+          <section class="simple-grid">
+            <article class="panel simple-queue">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">Now</p>
+                  <h2>Active Work</h2>
+                </div>
+                <button class="ghost-button" type="button" id="simpleRunButton">Run next</button>
+              </div>
+              <div id="simpleMissionList"></div>
+            </article>
+
+            <article class="panel simple-answer">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">Latest</p>
+                  <h2>JARVIS Output</h2>
+                </div>
+                <span class="pill">Preview</span>
+              </div>
+              <div class="answer-card" id="simpleAnswer">
+                <strong>Safe runner contract completed</strong>
+                <span>JARVIS checked ingress, security, routing, runner handoff, output guard, and reply footer.</span>
+              </div>
+            </article>
+          </section>
+        </section>
+
+        <section class="metric-grid advanced-only" aria-label="Operating metrics">
+          <article class="metric">
+            <span>Queued</span>
+            <strong id="queuedCount">0</strong>
+            <small>mission backlog</small>
+          </article>
+          <article class="metric">
+            <span>Running</span>
+            <strong id="runningCount">0</strong>
+            <small>active runner slots</small>
+          </article>
+          <article class="metric">
+            <span>Cost today</span>
+            <strong id="costToday">$0.00</strong>
+            <small>preview ledger</small>
+          </article>
+          <article class="metric">
+            <span>Risk posture</span>
+            <strong id="riskPosture">Armed</strong>
+            <small>kill switch ready</small>
+          </article>
+        </section>
+
+        <section class="control-grid advanced-only module-panel active" data-module-panel="mission-control">
+          <section class="panel mission-panel" id="mission-control">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Queue</p>
+                <h2>Missions</h2>
+              </div>
+              <div class="segmented" role="tablist" aria-label="Mission filter">
+                <button class="active" type="button" data-filter="all">All</button>
+                <button type="button" data-filter="Queued">Queued</button>
+                <button type="button" data-filter="Running">Running</button>
+                <button type="button" data-filter="Done">Done</button>
+              </div>
+            </div>
+            <div class="mission-board" id="missionRows" aria-live="polite"></div>
+          </section>
+
+          <section class="panel launcher-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Launcher</p>
+                <h2>New Mission</h2>
+              </div>
+              <span class="pill" id="selectedPack">Builder pack</span>
+            </div>
+            <form class="mission-form" id="missionForm">
+              <div class="form-row">
+                <label>
+                  Source
+                  <select name="source" id="sourceSelect">
+                    <option>Dashboard</option>
+                    <option>Telegram</option>
+                    <option>Slack</option>
+                    <option>War Room</option>
+                  </select>
+                </label>
+                <label>
+                  Agent
+                  <select name="agent" id="agentSelect">
+                    <option>orchestrator</option>
+                    <option>builder</option>
+                    <option>researcher</option>
+                    <option>analyst</option>
+                    <option>web-designer</option>
+                    <option>scheduler</option>
+                  </select>
+                </label>
+              </div>
+              <label>
+                Skill
+                <select name="skill" id="skillSelect">
+                  <option>jarvis-control-plane</option>
+                  <option>researcher-deep</option>
+                  <option>workflow-builder</option>
+                  <option>vibecode-app-builder</option>
+                  <option>memory-management</option>
+                  <option>weekly-review</option>
+                </select>
+              </label>
+              <label>
+                Prompt
+                <textarea name="prompt" id="promptInput" rows="5">Build the safe runner contract and SQLite mission tables for JARVIS.</textarea>
+              </label>
+              <div class="risk-picker" aria-label="Risk level">
+                <button class="active" type="button" data-risk="Low">Low</button>
+                <button type="button" data-risk="Medium">Medium</button>
+                <button type="button" data-risk="High">High</button>
+              </div>
+              <button class="primary-button" type="submit">
+                <span data-icon="plus"></span>
+                Enqueue mission
+              </button>
+            </form>
+          </section>
+
+          <section class="panel pipeline-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Runner boundary</p>
+                <h2>Execution Pipeline</h2>
+              </div>
+              <span class="pill" id="pipelineState">Idle</span>
+            </div>
+            <div class="pipeline" id="pipelineSteps">
+              <button type="button" data-stage="Ingress">Ingress</button>
+              <button type="button" data-stage="Security">Security</button>
+              <button type="button" data-stage="Router">Router</button>
+              <button type="button" data-stage="Runner">Runner</button>
+              <button type="button" data-stage="Guard">Guard</button>
+              <button type="button" data-stage="Reply">Reply</button>
+            </div>
+            <div class="terminal" id="terminalLog" aria-live="polite"></div>
+          </section>
+
+          <section class="panel mesh-panel" id="agent-mesh">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Agent mesh</p>
+                <h2>Routing Topology</h2>
+              </div>
+              <span class="pill" id="activeAgent">orchestrator pinned</span>
+            </div>
+            <canvas id="networkCanvas" width="740" height="360" aria-label="Agent routing topology"></canvas>
+            <div class="agent-grid" id="agentGrid"></div>
+          </section>
+
+          <section class="panel activity-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Events</p>
+                <h2>Audit Feed</h2>
+              </div>
+              <button class="ghost-button" type="button" id="clearLogButton">Clear</button>
+            </div>
+            <ol class="activity-list" id="activityList"></ol>
+          </section>
+        </section>
+
+        <section class="advanced-only module-panel" id="agents" data-module-panel="agents">
+          <section class="panel hero-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Agent mesh</p>
+                <h2>Specialist Directory</h2>
+              </div>
+              <span class="pill" id="agentModuleCount">0 agents</span>
+            </div>
+            <div class="module-split">
+              <div>
+                <canvas id="agentModuleCanvas" width="900" height="340" aria-label="Agent system topology"></canvas>
+                <div class="agent-grid large" id="agentDirectory"></div>
+              </div>
+              <aside class="detail-card" id="agentDetail"></aside>
+            </div>
+          </section>
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Skills</p>
+                <h2>Routable Capabilities</h2>
+              </div>
+            </div>
+            <div class="capability-grid" id="skillCatalog"></div>
+          </section>
+        </section>
+
+        <section class="advanced-only module-panel" id="setup" data-module-panel="setup">
+          <section class="panel hero-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">First run</p>
+                <h2>Operator Setup</h2>
+              </div>
+              <span class="pill" id="setupStatus">Checking</span>
+            </div>
+            <div class="setup-grid">
+              <article class="setup-step">
+                <span>1</span>
+                <strong>Identity</strong>
+                <p>Capture name, role, current goal, and working context.</p>
+              </article>
+              <article class="setup-step">
+                <span>2</span>
+                <strong>Archetype</strong>
+                <p>Detect the operator pattern and activate the right agents.</p>
+              </article>
+              <article class="setup-step">
+                <span>3</span>
+                <strong>Memory</strong>
+                <p>Populate core memory, L1 facts, tools, and active priorities.</p>
+              </article>
+            </div>
+            <div class="path-list" id="setupPaths"></div>
+          </section>
+        </section>
+
+        <section class="advanced-only module-panel" id="memory" data-module-panel="memory">
+          <section class="panel hero-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Memory</p>
+                <h2>Recall Browser</h2>
+              </div>
+              <span class="pill">L0 + L1 aware</span>
+            </div>
+            <form class="wide-search" id="memoryModuleForm">
+              <input id="memoryModuleSearch" type="search" value="control plane" aria-label="Search JARVIS memory" />
+              <button class="primary-button" type="submit">
+                <span data-icon="search"></span>
+                Search
+              </button>
+            </form>
+            <div class="memory-grid" id="memoryModuleResults"></div>
+          </section>
+        </section>
+
+        <section class="advanced-only module-panel" id="channels" data-module-panel="channels">
+          <section class="panel hero-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Ingress</p>
+                <h2>Channel Gateway</h2>
+              </div>
+              <span class="pill">Allowlisted intake</span>
+            </div>
+            <div class="module-split">
+              <div class="channel-matrix" id="channelMatrix"></div>
+              <form class="mission-form" id="channelIngestForm">
+                <div class="form-row">
+                  <label>
+                    Channel
+                    <select id="channelIngestSelect" name="channel">
+                      <option>Dashboard</option>
+                      <option>Telegram</option>
+                      <option>Slack</option>
+                      <option>War Room</option>
+                    </select>
+                  </label>
+                  <label>
+                    Risk
+                    <select id="channelRiskSelect" name="risk">
+                      <option>Low</option>
+                      <option>Medium</option>
+                      <option>High</option>
+                    </select>
+                  </label>
+                </div>
+                <label>
+                  Mission
+                  <textarea id="channelPromptInput" name="prompt" rows="5">Summarize this incoming request and route it to the right JARVIS agent.</textarea>
+                </label>
+                <button class="primary-button" type="submit">
+                  <span data-icon="plus"></span>
+                  Ingest mission
+                </button>
+              </form>
+            </div>
+          </section>
+        </section>
+
+        <section class="advanced-only module-panel" id="security" data-module-panel="security">
+          <section class="panel hero-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Security</p>
+                <h2>Policy Center</h2>
+              </div>
+              <span class="pill" id="securityMode">Armed</span>
+            </div>
+            <div class="module-split">
+              <div class="policy-list large" id="securityPolicyList"></div>
+              <div>
+                <div class="danger-zone">
+                  <strong>Inbound kill switch</strong>
+                  <span>Pauses queued execution and external channel intake.</span>
+                  <button class="danger-button" type="button" id="securityPauseButton">
+                    <span data-icon="pause"></span>
+                    Toggle pause
+                  </button>
+                </div>
+                <ol class="activity-list security-feed" id="securityEvents"></ol>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section class="advanced-only module-panel" id="automations" data-module-panel="automations">
+          <section class="panel hero-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Scheduled work</p>
+                <h2>Automation Registry</h2>
+              </div>
+              <span class="pill">Local registry</span>
+            </div>
+            <div class="module-split">
+              <div class="automation-list" id="automationList"></div>
+              <form class="mission-form" id="automationForm">
+                <label>
+                  Name
+                  <input id="automationName" name="name" type="text" value="New JARVIS monitor" />
+                </label>
+                <label>
+                  Trigger
+                  <input id="automationTrigger" name="trigger" type="text" value="Daily at 9:00 AM" />
+                </label>
+                <div class="form-row">
+                  <label>
+                    Agent
+                    <select id="automationAgent" name="agent">
+                      <option>orchestrator</option>
+                      <option>scheduler</option>
+                      <option>researcher</option>
+                      <option>builder</option>
+                    </select>
+                  </label>
+                  <label>
+                    Skill
+                    <select id="automationSkill" name="skill">
+                      <option>persistent-daemon</option>
+                      <option>morning-briefing</option>
+                      <option>weekly-review</option>
+                      <option>memory-management</option>
+                    </select>
+                  </label>
+                </div>
+                <button class="primary-button" type="submit">
+                  <span data-icon="plus"></span>
+                  Add automation
+                </button>
+              </form>
+            </div>
+          </section>
+        </section>
+
+        <section class="advanced-only module-panel" id="artifacts" data-module-panel="artifacts">
+          <section class="panel hero-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Outputs</p>
+                <h2>Artifacts & Runs</h2>
+              </div>
+              <span class="pill" id="artifactCount">0 saved</span>
+            </div>
+            <div class="artifact-list" id="artifactList"></div>
+          </section>
+        </section>
+
+        <section class="advanced-only module-panel" id="settings" data-module-panel="settings">
+          <section class="panel hero-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Runtime</p>
+                <h2>Settings</h2>
+              </div>
+              <span class="pill" id="settingsResolvedMode">local</span>
+            </div>
+            <form class="settings-grid" id="settingsForm">
+              <label>
+                Runner mode
+                <select id="runnerModeSelect" name="runnerMode">
+                  <option value="auto">Auto</option>
+                  <option value="claude">Claude</option>
+                  <option value="codex">Codex</option>
+                  <option value="local">Local fallback</option>
+                </select>
+              </label>
+              <label>
+                Max budget
+                <input id="runnerBudgetInput" name="runnerMaxBudget" type="number" min="0" max="5" step="0.05" value="0.35" />
+              </label>
+              <label>
+                Timeout seconds
+                <input id="runnerTimeoutInput" name="runnerTimeout" type="number" min="10" max="900" step="10" value="120" />
+              </label>
+              <label>
+                Permission mode
+                <select id="runnerPermissionSelect" name="runnerPermission">
+                  <option value="answer-only">Answer only</option>
+                  <option value="read-only">Read-only shell</option>
+                </select>
+              </label>
+              <label>
+                Artifact retention days
+                <input id="artifactRetentionInput" name="artifactRetentionDays" type="number" min="1" max="365" step="1" value="14" />
+              </label>
+              <button class="primary-button" type="submit">
+                <span data-icon="settings"></span>
+                Save settings
+              </button>
+            </form>
+            <div class="path-list" id="settingsPaths"></div>
+          </section>
+        </section>
+      </main>
+
+      <aside class="right-rail advanced-only">
+        <section class="panel compact-panel war-room-panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">War Room</p>
+              <h2>Voice Router</h2>
+            </div>
+            <span class="pill live-pill">Live shell</span>
+          </div>
+          <div class="voice-ring" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div class="war-room-controls">
+            <button class="active" type="button" data-voice-mode="Main">Main</button>
+            <button type="button" data-voice-mode="Pinned">Pinned</button>
+            <button type="button" data-voice-mode="Team">Team</button>
+          </div>
+        </section>
+
+        <section class="panel compact-panel" id="channels-rail">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Ingress</p>
+              <h2>Channels</h2>
+            </div>
+          </div>
+          <div class="channel-stack" id="channelStack"></div>
+        </section>
+
+        <section class="panel compact-panel" id="security-rail">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Security</p>
+              <h2>Policy Bar</h2>
+            </div>
+          </div>
+          <div class="policy-list" id="policyList"></div>
+        </section>
+
+        <section class="panel compact-panel" id="memory-rail">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Memory</p>
+              <h2>Recall Browser</h2>
+            </div>
+          </div>
+          <label class="search-box">
+            <span data-icon="search"></span>
+            <input id="memorySearch" type="search" value="control plane" aria-label="Search memory" />
+          </label>
+          <div class="memory-results" id="memoryResults"></div>
+        </section>
+
+        <section class="panel compact-panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Ledger</p>
+              <h2>Usage</h2>
+            </div>
+          </div>
+          <div class="ledger" id="usageLedger"></div>
+        </section>
+      </aside>
+    </div>
+
+    <div class="command-palette" id="commandPalette" aria-hidden="true">
+      <div class="palette-card" role="dialog" aria-modal="true" aria-label="Command palette">
+        <div class="palette-search">
+          <span data-icon="command"></span>
+          <input id="paletteInput" type="search" placeholder="Search agents, skills, missions" />
+        </div>
+        <div class="palette-results" id="paletteResults"></div>
+      </div>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

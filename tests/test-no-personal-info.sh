@@ -14,14 +14,12 @@ check_pattern() {
   #   - tests/ (this test script contains the patterns it searches for)
   #   - CHANGELOG.md (release notes mention historical scrub work)
   local matches
-  matches=$(grep -r -i -n "$pattern" \
-    --include="*.md" --include="*.json" --include="*.sh" --include="*.py" \
-    --include="*.yaml" --include="*.yml" --include="*.ts" --include="*.js" \
-    --include="*.html" --include="*.txt" \
-    --exclude-dir=tests --exclude-dir=node_modules --exclude-dir=.git \
-    --exclude-dir=archive \
-    --exclude=CHANGELOG.md \
-    2>/dev/null | grep -v "ChrisJDiMarco" || true)
+  matches=$(git ls-files \
+    '*.md' '*.json' '*.sh' '*.py' '*.yaml' '*.yml' '*.ts' '*.js' '*.html' '*.txt' \
+    | grep -v '^tests/' \
+    | grep -v '^CHANGELOG.md$' \
+    | xargs grep -i -n "$pattern" 2>/dev/null \
+    | grep -v "ChrisJDiMarco" || true)
   if [[ -n "$matches" ]]; then
     echo "FAIL: found references to '$desc'"
     echo "$matches" | head -5
