@@ -1,6 +1,6 @@
 <div align="center">
 
-<h1>JARVIS Universal</h1>
+<img src="assets/jarvis-banner.png" alt="JARVIS Universal — Agentic Operating System" width="100%">
 
 <p>
   <strong>A local-first agentic operating system for Claude Code, Codex, and Cowork.</strong>
@@ -25,8 +25,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-111827.svg)](https://opensource.org/licenses/MIT)
 [![Built with Claude Code](https://img.shields.io/badge/Built%20with-Claude%20Code-5b21b6.svg)](https://claude.com/product/claude-code)
 [![Runtime](https://img.shields.io/badge/Runtime-Claude%20%7C%20Codex%20%7C%20Local-0f766e.svg)](./runtime/control_center)
-[![Agents](https://img.shields.io/badge/Agents-63-2563eb.svg)](/.claude/agents)
-[![Skills](https://img.shields.io/badge/Skills-290%2B-0f766e.svg)](./skills)
+[![Agents](https://img.shields.io/badge/Agents-73-2563eb.svg)](/.claude/agents)
+[![Skills](https://img.shields.io/badge/Skills-247-0f766e.svg)](./skills)
 [![Status](https://img.shields.io/badge/Status-Local%20AI%20OS-111827.svg)](./)
 
 <br />
@@ -99,9 +99,9 @@ scripts/start_control_center.sh
 
 <table>
   <tr>
-    <td width="33%"><strong>Agent Team</strong><br /><sub>63 project agents plus a 47-agent ECC engineering sub-team.</sub></td>
+    <td width="33%"><strong>Agent Team</strong><br /><sub>73 project agents plus an ECC engineering sub-team.</sub></td>
     <td width="33%"><strong>Persistent Memory</strong><br /><sub>Layered markdown memory with search, recovery, decisions, and learnings.</sub></td>
-    <td width="33%"><strong>Skill Library</strong><br /><sub>290+ reusable playbooks for research, building, content, automation, and ops.</sub></td>
+    <td width="33%"><strong>Skill Library</strong><br /><sub>240+ reusable playbooks for research, building, content, automation, and ops.</sub></td>
   </tr>
   <tr>
     <td><strong>Self-Healing Workflows</strong><br /><sub>Build, test, diagnose, repair, and retry loops before escalating.</sub></td>
@@ -155,9 +155,9 @@ graph TD
     ORCH --> F["💰 Finance<br/>revenue · costs · invoices"]
     ORCH --> W["🎨 Web Designer<br/>landing pages · UI · motion"]
 
-    B --> ECC["⚙️ ECC Sub-Team<br/><i>47 specialist engineers</i>"]
+    B --> ECC["⚙️ ECC Sub-Team<br/><i>framework + lifecycle engineers</i>"]
 
-    ECC --> P["planner · architect<br/>tdd-guide · code-reviewer<br/>security · refactor<br/>+ 41 more"]
+    ECC --> P["planner · architect<br/>tdd-guide · code-reviewer<br/>security · refactor<br/>+ framework specialists"]
 
     ORCH --> MEM["💾 Memory System<br/><i>persistent across sessions</i>"]
     MEM --> L0["L0: Identity<br/><i>always loaded</i>"]
@@ -165,7 +165,7 @@ graph TD
     MEM --> L2["L2: Domain Context<br/><i>loaded on demand</i>"]
     MEM --> L3["L3: Deep History<br/><i>recovery mode</i>"]
 
-    ORCH --> SK["📚 Skills Library<br/>230+ playbooks"]
+    ORCH --> SK["📚 Skills Library<br/>240+ playbooks"]
     ORCH --> MC["🧬 MetaClaw<br/><i>learns from failures</i>"]
 
     style You fill:#4f46e5,color:#fff
@@ -250,6 +250,19 @@ Categories: tool-routing, workflow-patterns, vibe-coding,
 ```
 
 The stop hook fires both branches with `nohup` so it never blocks the terminal. JARVIS ships with seed lessons from real-world usage. Embeddings are populated automatically by `memory/embed_learned.py` after every reindex (idempotent, falls back to BM25 if Ollama isn't running).
+
+---
+
+## 🔧 Self-Maintaining
+
+Most agent systems rot silently. JARVIS is built to catch its own decay.
+
+- **One source of truth for counts.** `scripts/system-stats.sh` computes agent and skill counts from the filesystem. Docs cite it instead of hand-typing numbers, and `tests/test-counts-single-source.sh` fails the build if a prose number drifts.
+- **A daily deterministic backstop.** The Stop hook runs `check-staleness.sh` and `check-memory-caps.sh` once a day and writes a digest to `logs/`, so core hygiene survives even if every scheduled task dies.
+- **Reachability GC.** `scripts/reachability-gc.py` runs mark-and-sweep over the memory graph and reports nodes nothing live links to. Garbage is defined by unreachability, not age.
+- **A real test suite.** `tests/run-all.sh` (and CI on every push) checks bash syntax, hooks, routing targets, memory templates, single-sourced counts and caps, AGENTS.md sync, and a scan for leaked personal info.
+
+The lesson behind it: a self-review once found 9 of 11 scheduled tasks had silently died for weeks, including the watchdog meant to catch that. The fix was to consolidate into one pulse plus the deterministic backstop above, not to add more monitors. That principle lives in `.claude/rules/boring-is-beautiful.md`.
 
 ---
 
@@ -403,7 +416,7 @@ Full per-tool install steps live in [`setup/connect-tools.md`](setup/connect-too
 │   ├── semantic_search.py       Ollama-embeddings search (cosine, with BM25 fallback)
 │   └── embed_learned.py         Populates embeddings into the learned-lessons index
 │
-├── 🤖 .claude/agents/         ← 63 specialist agents
+├── 🤖 .claude/agents/         ← 73 specialist agents
 │   ├── orchestrator.md          Chief of Staff
 │   ├── researcher.md            Deep research pipeline
 │   ├── builder.md               App + automation engineer
@@ -411,7 +424,7 @@ Full per-tool install steps live in [`setup/connect-tools.md`](setup/connect-too
 │   ├── analyst.md               Market + SEO + competitive
 │   ├── [... 58 more agents]
 │
-├── 📚 skills/                 ← 230+ skill playbooks
+├── 📚 skills/                 ← 240+ skill playbooks
 │   ├── researcher-deep.md       6-phase research pipeline
 │   ├── vibecode-app-builder.md  25-prompt app build process
 │   ├── elite-web-ui/            2026-tier web design system
@@ -531,7 +544,7 @@ Designed to replace the first 10 minutes of every morning.
 </details>
 
 <details>
-<summary><b>ECC Builder Sub-Team (47 engineering specialists)</b></summary>
+<summary><b>ECC Builder Sub-Team (framework + lifecycle specialists)</b></summary>
 
 When `builder` gets a coding task, it delegates to the right specialist:
 
@@ -549,7 +562,7 @@ When `builder` gets a coding task, it delegates to the right specialist:
 
 ## 🔧 Hiring New Agents
 
-JARVIS comes with 63 agents — but you can add more any time:
+JARVIS comes with 73 agents — but you can add more any time:
 
 ```
 "I need an agent that handles customer onboarding emails.

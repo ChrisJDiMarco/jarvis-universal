@@ -20,6 +20,7 @@ Brings Universal current with six weeks of upstream evolution: an always-loaded 
 - **3 guard tests** wired into `run-all.sh`: `test-counts-single-source.sh`, `test-caps-single-source.sh`, `test-agents-md-sync.sh`.
 - **~15 skills**: the second-brain + cadence set (`evening-debrief`, `monthly-retrospective`, `world-briefing`, `four-cs-audit`, `knowledge-integrity`, `level-up`, `second-brain-level-audit`, `connection-synthesis`, `cloud-routines`, `grill-me-ingestion`), plus `app-creation-thinker`, `vibe-code-thinker`, `experimental-ui-styles`, `gws-cli`, `higgsfield-quickstart`, and the `skill-forge`, `remotion-best-practices`, and `viral-tiktok-forge` skill packs.
 - **GitHub Actions CI** — runs `tests/run-all.sh` on every push and pull request.
+- **Control Center** — a local mission-control dashboard (`apps/control-center/` + `runtime/control_center/server.py`) with a SQLite mission queue, safe runner boundary, channel gateway, and security controls. Launch with `scripts/start_control_center.sh`.
 
 ### Changed
 
