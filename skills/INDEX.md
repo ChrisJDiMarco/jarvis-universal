@@ -29,7 +29,6 @@
 | **MCP Code Execution Pattern** | `mcp-code-exec.md` | MCP server with 20+ tools, agent context bloating from tool schemas |
 | **File Delivery** | `file-delivery.md` | Implicit on every file deliverable — return path + summary, never paste contents |
 | **Agent Builder** | `agent-builder.md` | "I need an agent that handles [X]", "build me an agent for [Y]", "hire a new agent" |
-| **JARVIS Control Plane** | `jarvis-control-plane.md` | "command center", "control center", "mission control", "agent OS dashboard", "OS interface", "War Room", "mobile bridge", "ClaudeClaw-style" |
 | **Grade** | `grade.md` | "/grade", "grade this", "grade the work", independent CTO review |
 
 ---

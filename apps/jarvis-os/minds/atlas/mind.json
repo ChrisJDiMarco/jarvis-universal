@@ -1,0 +1,11 @@
+{
+  "name": "Atlas",
+  "icon": "🧠",
+  "color": "#7c5cff",
+  "subtitle": "Your Second Brain — persistent context, executive function, life OS",
+  "description": "A thinking partner that extends your cognitive capacity. Remembers what you forget, connects what you miss, and reasons alongside you on everything from daily planning to life decisions.",
+  "tags": ["Strategy", "Planning", "Memory", "Decisions", "Life OS"],
+  "status": "active",
+  "schedules": [],
+  "mcpTools": {}
+}

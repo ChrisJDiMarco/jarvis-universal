@@ -6,6 +6,24 @@ This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.2.0] — 2026-06-18
+
+Replaces the web-based Control Center with **JARVIS OS**, a desktop command center for running multiple AI minds.
+
+### Added
+
+- **JARVIS OS** (`apps/jarvis-os/`) — an Electron desktop app for managing multiple AI "minds" from one dashboard, each with its own `soul.md` identity, `CLAUDE.md` routing, and memory. Ships with 4 starter minds (Atlas, Strategos, Forge, Scribe), an orchestration mesh, per-mind memory with import/recall/verification, MCP access controls, and an IPC smoke test (`npm test`, no Electron required). Launch with `scripts/start_jarvis_os.sh`.
+
+### Removed
+
+- The previous Control Center (`apps/control-center/`, `runtime/control_center/`, `scripts/start_control_center.sh`, the `jarvis-control-plane` skill, and the control-plane gap-audit doc). JARVIS OS replaces it as the dashboard. Recoverable from git history and the `v1.1.0` tag.
+
+### Changed
+
+- README dashboard section now leads with JARVIS OS; Quick Start launches the desktop app instead of a localhost server; file structure and the README hero image updated.
+
+---
+
 ## [1.1.0] — 2026-06-18
 
 Brings Universal current with six weeks of upstream evolution: an always-loaded restructure, single-source-of-truth config, more self-maintenance, broader language coverage, and CI.

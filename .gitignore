@@ -66,3 +66,6 @@ logs/session-log.jsonl
 # Huashu Design — installed deps and build outputs (run npm install in skills/huashu-design/)
 skills/huashu-design/node_modules/
 skills/huashu-design/.video-tmp-*/
+
+# JARVIS OS / app dependencies
+apps/*/node_modules/

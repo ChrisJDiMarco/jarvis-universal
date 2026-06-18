@@ -7,13 +7,13 @@
 </p>
 
 <p>
-  Specialist agents, persistent memory, self-healing skills, a safe mission queue, and a premium Control Center dashboard.
+  Specialist agents, persistent memory, self-healing skills, and the JARVIS OS desktop command center.
 </p>
 
 <p>
   <a href="#quick-start"><strong>Quick Start</strong></a>
   ·
-  <a href="#control-center"><strong>Control Center</strong></a>
+  <a href="#jarvis-os"><strong>JARVIS OS</strong></a>
   ·
   <a href="#what-you-get"><strong>What You Get</strong></a>
   ·
@@ -24,14 +24,14 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-111827.svg)](https://opensource.org/licenses/MIT)
 [![Built with Claude Code](https://img.shields.io/badge/Built%20with-Claude%20Code-5b21b6.svg)](https://claude.com/product/claude-code)
-[![Runtime](https://img.shields.io/badge/Runtime-Claude%20%7C%20Codex%20%7C%20Local-0f766e.svg)](./runtime/control_center)
+[![Runtime](https://img.shields.io/badge/Runtime-Claude%20%7C%20Codex%20%7C%20Local-0f766e.svg)](./apps/jarvis-os)
 [![Agents](https://img.shields.io/badge/Agents-73-2563eb.svg)](/.claude/agents)
 [![Skills](https://img.shields.io/badge/Skills-247-0f766e.svg)](./skills)
 [![Status](https://img.shields.io/badge/Status-Local%20AI%20OS-111827.svg)](./)
 
 <br />
 
-<img src="assets/readme/control-center-preview.svg" alt="JARVIS Universal Control Center preview" width="100%" />
+<img src="assets/readme/jarvis-os-showcase.svg" alt="JARVIS OS minds dashboard" width="100%" />
 
 </div>
 
@@ -56,42 +56,32 @@ bash setup/install.sh
 claude
 ```
 
-Launch the visual Control Center:
+Launch the JARVIS OS desktop app:
 
 ```bash
-scripts/start_control_center.sh
+scripts/start_jarvis_os.sh
 ```
 
-Open `http://127.0.0.1:5174`.
+A desktop window opens. First run installs Electron (~200MB); after that it's instant.
 
 ---
 
-## Control Center
+## JARVIS OS
 
-The Control Center is the non-terminal front door for JARVIS. It gives everyday users a simple task launcher and gives technical operators the full mission-control surface.
+JARVIS OS is the desktop command center for JARVIS Universal — a native app (Electron) for running multiple AI **minds** side by side, each with its own personality, memory, and skills.
 
 <table>
   <tr>
-    <td width="50%"><strong>Simple Mode</strong><br /><sub>Consumer-friendly prompt box, quick task starters, active work, and latest output.</sub></td>
-    <td width="50%"><strong>Advanced Mode</strong><br /><sub>Mission queue, launcher, runner pipeline, agent mesh, audit feed, policy bar, channels, memory, artifacts, and settings.</sub></td>
+    <td width="50%"><strong>Multiple Minds</strong><br /><sub>Run distinct intelligences from one dashboard — each with its own <code>soul.md</code> identity, <code>CLAUDE.md</code> routing, and memory templates. Ships with 4 starter minds: Atlas, Strategos, Forge, Scribe.</sub></td>
+    <td width="50%"><strong>Orchestration Mesh</strong><br /><sub>Minds share context and pass messages to each other through a local mesh, so work hands off cleanly between intelligences.</sub></td>
   </tr>
   <tr>
-    <td><strong>SQLite Mission Queue</strong><br /><sub>Missions, runs, events, usage ledger, security decisions, artifacts, and automation registry.</sub></td>
-    <td><strong>Safe Runner Boundary</strong><br /><sub>Dashboard tasks run through Claude, Codex, or a local fallback without exposing raw shell freedom to the UI.</sub></td>
-  </tr>
-  <tr>
-    <td><strong>Channel Gateway</strong><br /><sub>Local endpoints for Dashboard, Telegram, Slack, and War Room ingress.</sub></td>
-    <td><strong>Security Controls</strong><br /><sub>Allowlist posture, PIN gate, exfiltration guard, kill switch, redaction, and audit log.</sub></td>
+    <td><strong>Persistent Memory</strong><br /><sub>Per-mind memory with import, recall, and verification — nothing is lost between sessions.</sub></td>
+    <td><strong>Safe by Default</strong><br /><sub>Path guards, MCP access controls, approval prompts before actions, and IPC contracts verified by a smoke test (<code>npm test</code>).</sub></td>
   </tr>
 </table>
 
-Source:
-
-```text
-apps/control-center/
-runtime/control_center/server.py
-scripts/start_control_center.sh
-```
+Launch it with `scripts/start_jarvis_os.sh` (first run installs Electron, ~200MB). Source lives in `apps/jarvis-os/`. A desktop window opens — no browser needed.
 
 ---
 
@@ -132,8 +122,8 @@ scripts/start_control_center.sh
 |------------|------------------------|------------------|
 | Routing | You choose what to ask and where | Orchestrator routes to the right specialist |
 | Memory | Mostly session-bound | Layered memory, decisions, learnings, recovery |
-| UI | Chat or terminal | Premium local Control Center plus terminal runtime |
-| Execution | Ad hoc | SQLite mission queue and safe runner boundary |
+| UI | Chat or terminal | JARVIS OS desktop app plus terminal runtime |
+| Execution | Ad hoc | Self-healing build, test, and repair loops |
 | Quality | Depends on prompt quality | Skills, guardrails, reviews, and self-healing loops |
 | Learning | Starts over often | MetaClaw extracts rules from failures and wins |
 
@@ -313,7 +303,7 @@ After about two minutes, JARVIS has populated memory, activated the right agents
 
 ### Try These First
 
-Six prompts that exercise the full system. Type one in Claude Code, or start the Control Center and queue it from the dashboard.
+Six prompts that exercise the full system. Type one in Claude Code, or launch JARVIS OS and run it from the dashboard.
 
 ```
 "morning briefing"
@@ -326,7 +316,7 @@ Six prompts that exercise the full system. Type one in Claude Code, or start the
 
 Once a few sessions are in, run `bash scripts/dashboard.sh` and open `owners-inbox/dashboard.html` for a status snapshot.
 
-For the new local OS surface, run `scripts/start_control_center.sh` and open `http://127.0.0.1:5174`.
+For the desktop surface, run `scripts/start_jarvis_os.sh`.
 
 ### Versioning, updating, recovery
 
@@ -428,7 +418,6 @@ Full per-tool install steps live in [`setup/connect-tools.md`](setup/connect-too
 │   ├── researcher-deep.md       6-phase research pipeline
 │   ├── vibecode-app-builder.md  25-prompt app build process
 │   ├── elite-web-ui/            2026-tier web design system
-│   ├── jarvis-control-plane.md  Control Center + mission queue playbook
 │   ├── competitive-intel.md     Validated competitor research
 │   ├── karpathy-loop.md         Auto-research architecture
 │   ├── heartbeat.md             Proactive periodic scans
@@ -440,9 +429,8 @@ Full per-tool install steps live in [`setup/connect-tools.md`](setup/connect-too
 │   ├── archetypes.md            8 operator archetypes + routing
 │   └── first-run.md             Setup wizard instructions
 │
-├── 🖥 apps/control-center/     ← Premium local JARVIS dashboard
-├── 🧩 runtime/control_center/  ← SQLite API + safe Claude/Codex runner
-├── ▶️  scripts/start_control_center.sh
+├── 🖥 apps/jarvis-os/          ← JARVIS OS — desktop command center (Electron)
+├── ▶️  scripts/start_jarvis_os.sh
 │
 ├── 📥 owners-inbox/           ← Every output JARVIS produces for you
 ├── 📤 team-inbox/             ← Drop files here for JARVIS to process
