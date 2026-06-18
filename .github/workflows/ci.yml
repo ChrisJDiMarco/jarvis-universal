@@ -1,0 +1,30 @@
+name: CI
+
+# Runs the JARVIS self-test suite on every push and pull request.
+# The suite (tests/run-all.sh) checks bash syntax, hook executability, routing
+# targets, memory templates, single-sourced counts + caps, AGENTS.md sync, and
+# scans for leaked personal info.
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Run test suite
+        run: bash tests/run-all.sh

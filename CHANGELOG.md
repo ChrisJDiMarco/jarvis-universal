@@ -6,6 +6,35 @@ This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.1.0] — 2026-06-18
+
+Brings Universal current with six weeks of upstream evolution: an always-loaded restructure, single-source-of-truth config, more self-maintenance, broader language coverage, and CI.
+
+### Added
+
+- **9 agents** (now 73 active): `a11y-architect`, `react-reviewer`, `react-build-resolver`, `swift-reviewer`, `swift-build-resolver`, `django-reviewer`, `django-build-resolver`, `fastapi-reviewer`, `mle-reviewer`. Every language reviewer (Go, Rust, Java, Kotlin, C++, C#, Dart, Flutter, PyTorch) now ships active, so the install fits any stack out of the box.
+- **3 ECC rules**: `boring-is-beautiful.md` (deterministic-first decision tree), `poc-first.md` (prove demand before building the heavy version), `api-over-mcp.md` (direct API + saved reference once a tool is used 3+ times).
+- **`config/memory-caps.conf`** — the single place memory caps are defined; `check-memory-caps.sh` and `setup/check.sh` both read it.
+- **`references/`** — lazy-loaded detail moved out of the always-loaded prompt: `routing-table.md` (40+ trigger→skill mappings), `memory-protocol.md`, `firecrawl-api.md`, `ui-skills.md`, and three moved-out rules (`skill-discovery`, `service-accounts`, `memory-reachability`).
+- **Self-maintenance scripts**: `system-stats.sh` (single source of truth for counts), `check-staleness.sh`, `reachability-gc.py` (mark-and-sweep memory GC), `integrity-check.py`, `measure-context-surface.sh`, `sync-agents-md.py`, `second-brain-level-audit.py`.
+- **3 guard tests** wired into `run-all.sh`: `test-counts-single-source.sh`, `test-caps-single-source.sh`, `test-agents-md-sync.sh`.
+- **~15 skills**: the second-brain + cadence set (`evening-debrief`, `monthly-retrospective`, `world-briefing`, `four-cs-audit`, `knowledge-integrity`, `level-up`, `second-brain-level-audit`, `connection-synthesis`, `cloud-routines`, `grill-me-ingestion`), plus `app-creation-thinker`, `vibe-code-thinker`, `experimental-ui-styles`, `gws-cli`, `higgsfield-quickstart`, and the `skill-forge`, `remotion-best-practices`, and `viral-tiktok-forge` skill packs.
+- **GitHub Actions CI** — runs `tests/run-all.sh` on every push and pull request.
+
+### Changed
+
+- **CLAUDE.md restructured** (36k → 26k chars while adding capability): inline routing and skills tables externalized to `references/` and `skills/INDEX.md`; inventory counts now cite `system-stats.sh`; memory caps reframed as advisory two-tier signals; the ops-scripts section reflects the real scripts plus the deterministic Stop-hook backstop.
+- **Stop hook** now runs `check-staleness.sh` + `check-memory-caps.sh` once a day (scheduler-independent hygiene). **PreCompact hook** self-bounds its recovery flag.
+- **Models** bumped to Opus 4.8 / Sonnet 4.6 / Haiku 4.5 in `setup/models.yaml`.
+- **AGENTS.md** is auto-generated from CLAUDE.md via `sync-agents-md.py`; `test-agents-md-sync.sh` keeps the two in lockstep.
+
+### Fixed
+
+- Stale hand-typed counts across docs (agents, ECC skills) now match the filesystem and are guarded against recurrence by `test-counts-single-source.sh`.
+- Sanitization sweep removed residual personal project names from ported reference and skill files; `test-no-personal-info.sh` passes clean.
+
+---
+
 ## [1.0.0] — 2026-05-05
 
 The first tagged release. Establishes JARVIS Universal as a production-ready, public-template Claude Code installation.

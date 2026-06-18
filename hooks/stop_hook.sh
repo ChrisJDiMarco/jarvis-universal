@@ -15,6 +15,11 @@ LOG_DIR="$JARVIS_DIR/logs"
 SESSION_LOG="$LOG_DIR/session-log.jsonl"
 ACTIVITY_LOG="$LOG_DIR/daily-activity.md"
 
+# Load local secrets (e.g. ANTHROPIC_API_KEY for MetaClaw extraction). GUI-launched
+# hooks don't read shell rc files, so the background extractor relies on this.
+# Guarded: no-op if .env is absent. .env is gitignored.
+[ -f "$JARVIS_DIR/.env" ] && set -a && . "$JARVIS_DIR/.env" && set +a
+
 mkdir -p "$LOG_DIR"
 
 # Read the hook payload from stdin
@@ -120,18 +125,27 @@ if [ -n "$FILES_TOUCHED" ] && echo "$FILES_TOUCHED" | grep -q "skills/learned/";
     ) >> "$LOG_DIR/metaclaw.log" 2>&1 &
 fi
 
-# ── claude-context (Milvus) incremental reindex ───────────────────────────
-# If any indexable source file was touched AND the semantic-search stack is
-# installed AND Milvus is reachable, kick off an incremental reindex in the
-# background. Silent if any of those conditions aren't met — semantic search
-# is opt-in, this hook never blocks or errors when it isn't set up.
-if [ -n "$FILES_TOUCHED" ] && \
-   echo "$FILES_TOUCHED" | grep -qE "skills/|\.claude/agents/|scripts/|hooks/|docs/|memory/|setup/|team/|projects/|CLAUDE\.md|README\.md|AGENTS\.md|INSTALL\.md"; then
-    if [ -f "$JARVIS_DIR/scripts/claude_context_indexer.py" ] && curl -sf http://127.0.0.1:9091/healthz >/dev/null 2>&1; then
-        # FORCE_REINDEX=false → uses Merkle-tree diff, only re-embeds changed files
-        FORCE_REINDEX=false nohup python3 "$JARVIS_DIR/scripts/claude_context_indexer.py" "$JARVIS_DIR" \
-            >> "$LOG_DIR/claude-context-indexer.log" 2>&1 &
-    fi
+# ── Daily maintenance gate: run the cheap checkers once per day ──────────────
+# Deterministic memory hygiene that does NOT depend on the scheduler (which has
+# died silently before — see CLAUDE.md "Scheduled Monitoring"). Gated by a date
+# stamp so it runs at most once/day, in the background, and can never block or
+# fail the hook. Writes a digest to logs/maintenance-<date>.log.
+MAINT_STAMP="$LOG_DIR/.maint-stamp"
+if [ ! -f "$MAINT_STAMP" ] || [ "$(cat "$MAINT_STAMP" 2>/dev/null)" != "$DATE" ]; then
+    echo "$DATE" > "$MAINT_STAMP"
+    (
+        cd "$JARVIS_DIR" || exit 0
+        MAINT_LOG="$LOG_DIR/maintenance-$DATE.log"
+        {
+            echo "# JARVIS daily maintenance — $TIMESTAMP"
+            echo ""
+            echo "## Staleness (check-staleness.sh)"
+            bash scripts/check-staleness.sh 2>&1
+            echo ""
+            echo "## Context-budget caps (check-memory-caps.sh)"
+            bash scripts/check-memory-caps.sh 2>&1
+        } > "$MAINT_LOG" 2>&1
+    ) &
 fi
 
 exit 0

@@ -38,7 +38,7 @@ The loop needs one number to optimize. Without it, "improvement" is undefined.
 | Public-records detector | Precision@k on verified true-positive set |
 | JARVIS agent prompts | Task completion rate on eval set |
 | MetaClaw lessons | Lesson reuse rate (injections that prevent errors) |
-| Golden Thread content | Engagement rate per asset |
+| Blog / social content | Engagement rate per asset |
 | Product onboarding | % reaching aha moment within 5 screens |
 
 ### 2. Solid Memory Architecture

@@ -135,7 +135,7 @@ Each one should route to a different specialist and produce a real output. Outpu
 |------|---------|
 | `CLAUDE.md` | System config — loaded by Claude Code every session |
 | `memory/` | Persistent operator context (capped markdown files) |
-| `.claude/agents/` | 65 agent definitions |
+| `.claude/agents/` | 73 agent definitions |
 | `.claude/rules/` | Always-loaded guardrails (coding-style, security, testing, ...) |
 | `skills/` | ~55 top-level skill playbooks |
 | `skills/ecc/` | 181 ECC technical skills |

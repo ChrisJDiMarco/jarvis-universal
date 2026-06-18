@@ -13,8 +13,8 @@ tiers:
       Complex architectural decisions, competitive positioning, first-run
       setup, multi-step planning, high-stakes calls. Reach for this when
       the cost of being wrong is high and the cost of thinking longer is low.
-    model: claude-opus-4-7
-    fallback: claude-opus-4-6
+    model: claude-opus-4-8
+    fallback: claude-opus-4-7
 
   daily:
     description: |

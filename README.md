@@ -16,7 +16,7 @@
 ```
 Chat AI                          JARVIS
 ──────────────────────────────   ──────────────────────────────────────
-One model, no memory         →   63 specialists + layered memory
+One model, no memory         →   73 specialists + layered memory
 Forgets everything each chat →   Remembers goals, decisions, rules
 Hallucinated stats & facts   →   Claims verified before delivery
 Fails silently               →   Self-healing loops, 5-attempt recovery
@@ -26,8 +26,8 @@ You manage the process       →   Orchestrator routes, specialists execute
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Built with Claude](https://img.shields.io/badge/Built%20with-Claude%20Code-blueviolet)](https://claude.com/product/claude-code)
-[![Agents](https://img.shields.io/badge/Agents-63-blue)](/.claude/agents)
-[![Skills](https://img.shields.io/badge/Skills-290%2B-green)](./skills)
+[![Agents](https://img.shields.io/badge/Agents-73-blue)](/.claude/agents)
+[![Skills](https://img.shields.io/badge/Skills-246-green)](./skills)
 [![Status](https://img.shields.io/badge/Status-Production-success)](./)
 
 [**Quick Start →**](#-setup) &nbsp;·&nbsp; [**What It Does →**](#-what-jarvis-does) &nbsp;·&nbsp; [**How It Compares →**](#-how-it-compares) &nbsp;·&nbsp; [**Architecture →**](#-architecture)
@@ -68,8 +68,8 @@ It's not an assistant. It's a team that happens to live inside Claude Code.
 |  | JARVIS | Bare Claude Code | Cursor / Copilot | Aider | CrewAI / LangGraph |
 |--|--------|------------------|------------------|-------|--------------------|
 | **Primary use** | Any knowledge work | Coding | IDE coding | Pair-programming | Build-your-own agents |
-| **Specialist roster** | ✅ 63 + 47 ECC engineers | ❌ | ❌ | ❌ | Build yourself |
-| **Persistent memory** | ✅ 4-layer lazy load | ⚠️ project files | ❌ | ❌ | Build yourself |
+| **Specialist roster** | ✅ 73 specialist agents | ❌ | ❌ | ❌ | Build yourself |
+| **Persistent memory** | ✅ Layered lazy load | ⚠️ project files | ❌ | ❌ | Build yourself |
 | **Learns from failures** | ✅ MetaClaw | ❌ | ❌ | ❌ | ❌ |
 | **Works out of the box** | ✅ Clone + run | ✅ Clone + run | ✅ | ✅ | ❌ (framework) |
 | **Scope** | Research, content, build, analyze, schedule | Coding tasks | Coding tasks | Coding tasks | Whatever you build |
@@ -94,9 +94,9 @@ graph TD
     ORCH --> F["💰 Finance<br/>revenue · costs · invoices"]
     ORCH --> W["🎨 Web Designer<br/>landing pages · UI · motion"]
 
-    B --> ECC["⚙️ ECC Sub-Team<br/><i>47 specialist engineers</i>"]
+    B --> ECC["⚙️ ECC Sub-Team<br/><i>framework + lifecycle engineers</i>"]
 
-    ECC --> P["planner · architect<br/>tdd-guide · code-reviewer<br/>security · refactor<br/>+ 41 more"]
+    ECC --> P["planner · architect<br/>tdd-guide · code-reviewer<br/>security · refactor<br/>+ framework & lifecycle specialists"]
 
     ORCH --> MEM["💾 Memory System<br/><i>persistent across sessions</i>"]
     MEM --> L0["L0: Identity<br/><i>always loaded</i>"]
@@ -104,7 +104,7 @@ graph TD
     MEM --> L2["L2: Domain Context<br/><i>loaded on demand</i>"]
     MEM --> L3["L3: Deep History<br/><i>recovery mode</i>"]
 
-    ORCH --> SK["📚 Skills Library<br/>230+ playbooks"]
+    ORCH --> SK["📚 Skills Library<br/>240+ playbooks"]
     ORCH --> MC["🧬 MetaClaw<br/><i>learns from failures</i>"]
 
     style You fill:#4f46e5,color:#fff
@@ -141,7 +141,7 @@ Session Start
 
 **At session end**, JARVIS evaluates what it learned and writes updates to the appropriate layer. The index rebuilds automatically.
 
-Caps are calibrated for Opus 4.7 (L1 5k chars, context 25k, learnings 20k, ai-intelligence 25k). The cap is a forcing function for dropping dead entries — not a context-window guard.
+Caps are **advisory** budget signals defined in exactly one place — `config/memory-caps.conf` — split by tier: tight limits on always-loaded context (paid every turn), generous ceilings on on-demand L2 files. Nothing ever blocks a write. Dead content is found by age (`check-staleness.sh`) and reachability (`reachability-gc.py`), never by size. `tests/test-caps-single-source.sh` fails the build if a cap is hardcoded anywhere else.
 
 ```bash
 # Semantic search via Ollama embeddings (cosine similarity), with transparent BM25 fallback
@@ -189,6 +189,19 @@ Categories: tool-routing, workflow-patterns, vibe-coding,
 ```
 
 The stop hook fires both branches with `nohup` so it never blocks the terminal. JARVIS ships with seed lessons from real-world usage. Embeddings are populated automatically by `memory/embed_learned.py` after every reindex (idempotent, falls back to BM25 if Ollama isn't running).
+
+---
+
+## 🔧 Self-Maintaining
+
+Most agent systems rot silently. JARVIS is built to catch its own decay.
+
+- **One source of truth for counts.** `scripts/system-stats.sh` computes agent and skill counts from the filesystem. Docs cite it instead of hand-typing numbers, and `tests/test-counts-single-source.sh` fails the build if a prose number drifts.
+- **A daily deterministic backstop.** The Stop hook runs `check-staleness.sh` and `check-memory-caps.sh` once a day and writes a digest to `logs/`, so core hygiene survives even if every scheduled task dies.
+- **Reachability GC.** `scripts/reachability-gc.py` runs mark-and-sweep over the memory graph and reports nodes nothing live links to — captured once, never wired in. Garbage is defined by unreachability, not age.
+- **A real test suite.** `tests/run-all.sh` checks bash syntax, hooks, routing targets, memory templates, single-sourced counts and caps, AGENTS.md sync, and scans for leaked personal info. Run it before any change.
+
+The lesson behind all of this: a self-review once found 9 of 11 scheduled tasks had silently died for weeks, including the watchdog meant to catch that. The fix was to consolidate into one pulse plus the deterministic backstop above, not to add more monitors. That principle lives in `.claude/rules/boring-is-beautiful.md`.
 
 ---
 
@@ -340,7 +353,7 @@ Full per-tool install steps live in [`setup/connect-tools.md`](setup/connect-too
 │   ├── semantic_search.py       Ollama-embeddings search (cosine, with BM25 fallback)
 │   └── embed_learned.py         Populates embeddings into the learned-lessons index
 │
-├── 🤖 .claude/agents/         ← 63 specialist agents
+├── 🤖 .claude/agents/         ← 73 specialist agents
 │   ├── orchestrator.md          Chief of Staff
 │   ├── researcher.md            Deep research pipeline
 │   ├── builder.md               App + automation engineer
@@ -463,7 +476,7 @@ Designed to replace the first 10 minutes of every morning.
 </details>
 
 <details>
-<summary><b>ECC Builder Sub-Team (47 engineering specialists)</b></summary>
+<summary><b>ECC Builder Sub-Team (framework + lifecycle engineers)</b></summary>
 
 When `builder` gets a coding task, it delegates to the right specialist:
 
@@ -481,7 +494,7 @@ When `builder` gets a coding task, it delegates to the right specialist:
 
 ## 🔧 Hiring New Agents
 
-JARVIS comes with 63 agents — but you can add more any time:
+JARVIS comes with 73 agents — but you can add more any time:
 
 ```
 "I need an agent that handles customer onboarding emails.

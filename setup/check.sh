@@ -110,21 +110,29 @@ fi
 
 # ─────────────────────────────────────────────────────────────────────────
 section "Memory file caps"
-# Cap definitions (chars). Source of truth: CLAUDE.md memory file caps table.
-declare -a MEM_FILES=(
-  "memory/L1-critical-facts.md:5000"
-  "memory/core.md:8000"
-  "memory/context.md:25000"
-  "memory/decisions.md:15000"
-  "memory/learnings.md:20000"
-  "memory/relationships.md:15000"
-  "memory/ai-intelligence.md:25000"
-  "memory/soul.md:16000"
-)
+# Cap definitions loaded from the SINGLE SOURCE OF TRUTH — config/memory-caps.conf.
+MEM_CONF="$JARVIS_ROOT/config/memory-caps.conf"
+declare -a MEM_FILES=()
+if [[ -f "$MEM_CONF" ]]; then
+  while IFS= read -r raw; do
+    line="${raw%%#*}"; line="$(printf '%s' "$line" | xargs)"
+    [[ -n "$line" ]] && MEM_FILES+=("$line")
+  done < "$MEM_CONF"
+else
+  record CRIT "config/memory-caps.conf" "missing — single source of truth for caps"
+fi
 for entry in "${MEM_FILES[@]}"; do
   file="${entry%:*}"; cap="${entry##*:}"
-  if [[ -f "$JARVIS_ROOT/$file" ]]; then
+  size=""
+  if [[ "$file" == */ ]]; then
+    # Directory entry: sum *.md directly under it (always-loaded budget guard).
+    if [[ -d "$JARVIS_ROOT/$file" ]]; then
+      size=$(cat "$JARVIS_ROOT/$file"*.md 2>/dev/null | wc -c | tr -d ' ')
+    fi
+  elif [[ -f "$JARVIS_ROOT/$file" ]]; then
     size=$(wc -c < "$JARVIS_ROOT/$file" | tr -d ' ')
+  fi
+  if [[ -n "$size" ]]; then
     pct=$(( size * 100 / cap ))
     if [[ $size -gt $cap ]]; then
       record CRIT "$file" "$size / $cap chars (${pct}%) — OVER cap"

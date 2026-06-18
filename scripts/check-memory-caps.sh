@@ -1,8 +1,14 @@
 #!/usr/bin/env bash
-# JARVIS Universal — memory file cap check
+# JARVIS Universal — context-budget cap check
 #
-# Verifies each memory/*.md file is within its documented cap (CLAUDE.md
-# memory file caps table). Warns at 80%, fails at 100%.
+# Verifies each capped path (memory files, CLAUDE.md, the .claude/rules/ dir)
+# is within its documented cap (config/memory-caps.conf). Warns at 80%, flags
+# over-cap with exit 1 — ADVISORY ONLY: this never blocks or truncates a write.
+#
+# Caps are a budget/anti-bloat signal, not a liveness measure. Dead content is
+# found by check-staleness.sh (age) and reachability-gc.py (reachability).
+#
+# A cap path ending in '/' sums the *.md files directly under that directory.
 #
 # Run on demand or wire into a scheduled task to alert before files
 # silently grow past capacity and start losing recall fidelity.
@@ -25,17 +31,19 @@ else
   RED=''; GREEN=''; YELLOW=''; DIM=''; NC=''
 fi
 
-# Caps in characters. Source: CLAUDE.md memory protocol.
-declare -a CAPS=(
-  "memory/L1-critical-facts.md:5000"
-  "memory/core.md:8000"
-  "memory/context.md:25000"
-  "memory/decisions.md:15000"
-  "memory/learnings.md:20000"
-  "memory/relationships.md:15000"
-  "memory/ai-intelligence.md:25000"
-  "memory/soul.md:16000"
-)
+# Caps loaded from the SINGLE SOURCE OF TRUTH — config/memory-caps.conf.
+# Do NOT hardcode caps here; edit the conf. (tests/test-caps-single-source.sh enforces this.)
+CAPS_CONF="$JARVIS_ROOT/config/memory-caps.conf"
+declare -a CAPS=()
+if [[ -f "$CAPS_CONF" ]]; then
+  while IFS= read -r raw; do
+    line="${raw%%#*}"; line="$(printf '%s' "$line" | xargs)"
+    [[ -n "$line" ]] && CAPS+=("$line")
+  done < "$CAPS_CONF"
+else
+  echo "ERROR: $CAPS_CONF missing (single source of truth for caps)" >&2
+  exit 3
+fi
 
 over=0; warn=0; ok=0
 [[ "$MODE" == "json" ]] && printf '['
@@ -44,7 +52,20 @@ first=1
 for entry in "${CAPS[@]}"; do
   file="${entry%:*}"; cap="${entry##*:}"
   path="$JARVIS_ROOT/$file"
-  if [[ ! -f "$path" ]]; then
+  if [[ "$file" == */ ]]; then
+    # Directory entry: cap the SUM of *.md directly under it.
+    if [[ ! -d "$path" ]]; then
+      if [[ "$MODE" == "json" ]]; then
+        [[ $first -eq 0 ]] && printf ','
+        first=0
+        printf '{"file":"%s","status":"missing","size":0,"cap":%d}' "$file" "$cap"
+      else
+        printf "%-32s ${DIM}missing${NC}\n" "$file"
+      fi
+      continue
+    fi
+    size=$(cat "$path"*.md 2>/dev/null | wc -c | tr -d ' ')
+  elif [[ ! -f "$path" ]]; then
     if [[ "$MODE" == "json" ]]; then
       [[ $first -eq 0 ]] && printf ','
       first=0
@@ -53,8 +74,9 @@ for entry in "${CAPS[@]}"; do
       printf "%-32s ${DIM}missing${NC}\n" "$file"
     fi
     continue
+  else
+    size=$(wc -c < "$path" | tr -d ' ')
   fi
-  size=$(wc -c < "$path" | tr -d ' ')
   pct=$(( size * 100 / cap ))
   status="ok"
   [[ $pct -ge 100 ]] && status="over" && over=$((over+1))

@@ -11,18 +11,11 @@ This script launches the MCP server as a child process and keeps the stdio
 connection open for as long as indexing takes, polling get_indexing_status
 every 30 seconds until the server reports completion or failure.
 
-
 Usage:
-    python3 scripts/claude_context_indexer.py                 # indexes ~/jarvis
-    python3 scripts/claude_context_indexer.py /path/to/repo   # indexes any dir
-    JARVIS_ROOT=~/my-jarvis python3 scripts/claude_context_indexer.py
+    python3 claude_context_indexer.py [path]
 
-Requirements:
-    - Ollama running on http://127.0.0.1:11434 with `nomic-embed-text` pulled
-    - Milvus running on 127.0.0.1:19530 (see docs/semantic-code-search-setup.md)
-    - Node.js / npx available (the MCP is an npm package)
-
-Writes progress to <target>/logs/claude-context-indexer.log
+Default path: ~/jarvis
+Writes progress to logs/claude-context-indexer.log
 """
 
 import json
@@ -32,20 +25,19 @@ import sys
 import time
 from pathlib import Path
 
-DEFAULT_ROOT = Path(os.environ.get("JARVIS_ROOT", Path.home() / "jarvis")).expanduser()
-PATH = Path(sys.argv[1]).expanduser() if len(sys.argv) > 1 else DEFAULT_ROOT
+PATH = sys.argv[1] if len(sys.argv) > 1 else str(Path.home() / "jarvis")
 POLL_INTERVAL_SEC = 30
 MAX_MINUTES = 45
-LOG_PATH = PATH / "logs" / "claude-context-indexer.log"
+LOG_PATH = Path.home() / "jarvis" / "logs" / "claude-context-indexer.log"
 
 ENV = {
     **os.environ,
     "EMBEDDING_PROVIDER": "Ollama",
     "EMBEDDING_MODEL": "nomic-embed-text",
-    "OLLAMA_HOST": os.environ.get("OLLAMA_HOST", "http://127.0.0.1:11434"),
-    "MILVUS_ADDRESS": os.environ.get("MILVUS_ADDRESS", "127.0.0.1:19530"),
-    "MILVUS_TOKEN": os.environ.get("MILVUS_TOKEN", "local"),
-    "EMBEDDING_BATCH_SIZE": os.environ.get("EMBEDDING_BATCH_SIZE", "64"),
+    "OLLAMA_HOST": "http://127.0.0.1:11434",
+    "MILVUS_ADDRESS": "127.0.0.1:19530",
+    "MILVUS_TOKEN": "local",
+    "EMBEDDING_BATCH_SIZE": "64",
     "CUSTOM_EXTENSIONS": ".md,.markdown,.mdx",
     "CUSTOM_IGNORE_PATTERNS": (
         "logs/**,data/**,**/*.db,**/*.sqlite,**/.next/**,**/dist/**,"
@@ -55,7 +47,6 @@ ENV = {
     ),
     "CODE_CHUNKS_COLLECTION_NAME_OVERRIDE": "jarvis",
 }
-
 
 
 def log(msg: str) -> None:
@@ -90,10 +81,12 @@ def read_response(proc: subprocess.Popen, expected_id: int, timeout_sec: int = 3
         try:
             msg = json.loads(line)
         except json.JSONDecodeError:
+            # stderr leaked into stdout or progress print
             log(f"non-json: {line[:200]}")
             continue
         if msg.get("id") == expected_id:
             return msg
+        # other messages (notifications, unrelated responses) — log and keep reading
         if "method" in msg:
             log(f"notif: {msg.get('method')} params={str(msg.get('params'))[:100]}")
     log(f"timeout waiting for id={expected_id}")
@@ -112,15 +105,13 @@ def extract_text(response: dict) -> str:
     return "\n".join(parts)
 
 
-
 def main() -> int:
-    target = str(PATH)
-    log(f"launching MCP server, indexing target: {target}")
+    log(f"launching MCP server, indexing target: {PATH}")
     proc = subprocess.Popen(
         ["npx", "-y", "@zilliz/claude-context-mcp@latest"],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
-        stderr=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,  # drop stderr so it doesn't interleave
         env=ENV,
         text=True,
         bufsize=1,
@@ -148,21 +139,19 @@ def main() -> int:
     send(proc, {"jsonrpc": "2.0", "method": "notifications/initialized"})
     time.sleep(1)
 
-    # 3. kick off indexing
-    force = os.environ.get("FORCE_REINDEX", "true").lower() in ("1", "true", "yes")
-    log(f"calling index_codebase(force={force})")
+    # 3. kick off index with force=true (retry from interrupted state)
+    log("calling index_codebase(force=true)")
     send(proc, {
         "jsonrpc": "2.0",
         "id": 2,
         "method": "tools/call",
         "params": {
             "name": "index_codebase",
-            "arguments": {"path": target, "splitter": "ast", "force": force},
+            "arguments": {"path": PATH, "splitter": "ast", "force": True},
         },
     })
     resp = read_response(proc, 2, timeout_sec=60)
     log(f"index_codebase response: {extract_text(resp)[:300]}")
-
 
     # 4. poll status loop
     start = time.time()
@@ -180,7 +169,7 @@ def main() -> int:
             "method": "tools/call",
             "params": {
                 "name": "get_indexing_status",
-                "arguments": {"path": target},
+                "arguments": {"path": PATH},
             },
         })
         resp = read_response(proc, poll_id, timeout_sec=30)
@@ -188,11 +177,12 @@ def main() -> int:
         if text and text != last_progress:
             log(f"status: {text[:400]}")
             last_progress = text
+        # terminal states
         lower = text.lower()
-        if "indexing failed" in lower:
+        if "indexing failed" in lower or "not indexed" in lower and "failed" in lower:
             log("FAIL detected")
             break
-        if ("completed" in lower or "100%" in lower or "fully indexed" in lower):
+        if "completed" in lower or "100%" in lower or "finished" in lower or "is indexed" in lower and "progress" not in lower:
             log("COMPLETE detected")
             break
 

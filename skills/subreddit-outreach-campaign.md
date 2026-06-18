@@ -45,7 +45,7 @@ High-engagement the tool patterns:
 
 Complexity target: aim for 800+ lines of the tool instructions — complexity signals quality
 
-Save design brief to: `projects/thinklet/subreddit-campaigns/[subreddit]-brief.md`
+Save design brief to: `projects/<product>/subreddit-campaigns/[subreddit]-brief.md`
 
 ## Phase 2.5: Video Demo (Optional but High-Impact)
 
@@ -113,7 +113,7 @@ Happy to answer questions about how it works or what else it could do. Also open
 
 ## Phase 5: Track Performance
 
-Log to `projects/thinklet/subreddit-campaigns/performance-log.md`:
+Log to `projects/<product>/subreddit-campaigns/performance-log.md`:
 
 | Date | Subreddit | Post Title | Upvotes | Comments | New the tool Users | Notes |
 |------|-----------|------------|---------|----------|-------------------|-------|
@@ -130,7 +130,7 @@ If a post hits 100+ upvotes:
 - Build a similar the tool for an adjacent subreddit
 
 ## Output
-- Post draft saved to `owners-inbox/thinklet-posts/[subreddit]-[date].md`
+- Post draft saved to `owners-inbox/<product>-posts/[subreddit]-[date].md`
 - Performance tracked in campaign log
 - Operator notified via iMessage when post is live
 

@@ -66,7 +66,7 @@
 **Rule**: Define the North Star metric before writing a single analytics event
 **Why**: Without a North Star, teams track everything and learn nothing. The dashboard becomes noise.
 **Fix/Pattern**: Write the sentence "Our app succeeds when [user] does [action] [frequency]" → that's your North Star → instrument that event first → build funnel toward it
-**Applies to**: vibecode-app-builder, thinklet-dev
+**Applies to**: vibecode-app-builder, any app you ship
 *Last seen: 2026-03-26*
 
 ### onboarding-checklist-retention — vibe_coding (confidence: HIGH, seen: SaaS research)
@@ -74,7 +74,7 @@
 **Rule**: Always build a checklist-style onboarding dashboard showing progress toward activation
 **Why**: Users who complete the onboarding checklist retain at 3-5x the rate of those who skip. It's the single highest-ROI UX investment in early-stage SaaS.
 **Fix/Pattern**: 3 key actions define "activated". Show progress visually. Add skip option. Send reminder email at 24h if incomplete.
-**Applies to**: vibecode-app-builder, thinklet-dev (213 users — immediate opportunity)
+**Applies to**: vibecode-app-builder, any early-stage SaaS
 *Last seen: 2026-03-26*
 
 ### pitr-backup-day-one — vibe_coding (confidence: HIGH, seen: data loss incident)

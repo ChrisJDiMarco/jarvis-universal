@@ -2,7 +2,7 @@
 
 ## Available Agents
 
-Agents live in `.claude/agents/` (65 total).
+Agents live in `.claude/agents/` (73 active agents — run `scripts/system-stats.sh` for the live count, which is the SSOT).
 
 > **Source of truth**: `team/roster.md` (JARVIS agents) and the Team Roster table in `CLAUDE.md` (which lists the ECC builder sub-team).
 > The table below is a short-hand for the most-used coding agents — NOT an exhaustive list.
